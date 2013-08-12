@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>iSparta--WebP、APNG转换器</title>
+	<link rel="stylesheet" type="text/css" href="assets/css/main.css">
+</head>
+<body>
+<div id="wrapper">
+	<div id="topbar">
+		<h1><strong>iSparta</strong> -- Webp、APNG 转换器</h1>
+		<ul class="nav">
+			<li><span class="minimize">━</span></li>
+			<li><span class="close">&times;</span></li>
+		</ul>
+	</div>
+	<!-- <div class="progress"></div> -->
+	<div id="content">
+		<div class="func_tab">
+			<ul class="tab_trigger">
+				<li>PNG转WebP</li>
+				<li class="active">PNG转APNG</li>
+			</ul>
+			<div class="tab_content">
+				<div id="pngToWebp" class="cont">
+					<div class="empty">
+						<span class="drag_area">+</span>
+						<input class="hide" type="file" multiple webkitdirectory />
+					</div>
+				</div>
+				<div id="pngToApng" class="cont active">
+					<div class="box_setting clearfix">
+						<div class="option">
+							<label>循环次数</label>
+					         <select id="apng_select_loop">
+					            <option value ="0">一直</option>
+					            <option value ="1">1次</option>
+					            <option value="2">2次</option>
+					            <option value="3">3次</option>
+					            <option value="4">4次</option>
+					            <option value="5">5次</option>
+					         </select>
+				         </div>
+				         <div class="option">
+					         <label>帧频率</label>
+					          <select id="apng_select_rate">
+					            <option value ="1">0.1</option>
+					            <option value ="2">0.2</option>
+					            <option value="3">0.3</option>
+					            <option value="4">0.4</option>
+					            <option value="5">0.5</option>
+					            <option value="6">0.6</option>
+					            <option value="7">0.7</option>
+					            <option value="8">0.8</option>
+					            <option value="9">0.9</option>
+					            <option value="10">1.0</option>
+					          </select>
+					          秒/帧
+				          </div>
+				          <div class="option">
+								<label>输出目录</label>
+								<select class="folder_select" id="apng_select_savePath">
+									
+								</select>
+								<button id="apng_btn_savePath">选择目录</button>
+								<input class="hide" type="file" id="apng_savePath_hidden"  nwdirectory/>
+							</div>
+				          <div class="func">
+				          	<button class="custom_button btn_strong" id="apng_btn_cov">开始转换</button>
+				          </div>
+					</div>
+					<div class="box_preview">
+						<div class="empty">
+							<span class="drag_area">+</span>
+							
+						</div>
+						<script id="apng_tmpl_filelist" type="text/template">
+			              {{ for (var i = 0; i < it.all.length; i++) { }}
+			                <ul class="clearfix imglist">
+			                    {{ for (var j = 0; j < it.all[i].files.length; j++) { }}
+			                    <li data-pid="{{=i}}" data-id="{{=j}}" class="checked">
+			                    	<div class="thumb">
+			                    		<img src="{{=it.all[i].files[j].url[0]}}" alt="">
+			                    	</div>
+			                      	<div class="info clearfix">
+			                        	<input type="text" value="{{=it.all[i].files[j].name}}"/>
+			                        	<i class="icon-folder-open" data-href="{{=it.all[i].files[j].url[0]}}" data-pid={{=i}} ></i>
+			                      	</div>
+			                     </li>
+			                    {{ } }}
+			                </ul>
+			              {{ } }}
+			            </script> 
+					</div>
+					<div class="box_status clearfix">
+						<div class="option">
+							<label>当前目录</label>
+							<select class="folder_select" id="apng_select_currentPath">
+								
+							</select>
+							<input class="hide" type="file" id="apng_path_hidden" nwdirectory/>
+							<button id="apng_btn_currentPath">选择目录</button>
+							<button id="apng_currentPath_refresh">刷新</button>
+						</div>
+						
+					</div>
+				</div>
+			</div>
+		</div>
+
+		
+	</div>
+	<div class="pop pop_loading">
+      <div class="pop_wrapper">
+        <div class="loading_cont">
+        <div class="icon_loading">
+          <i class="icon-spinner icon"></i>
+        </div>
+        <p class="txt">正在处理，请稍后...</p>
+      </div>
+      </div>
+    </div>
+    <div class="pop pop_progress">
+      	<div class="pop_wrapper">
+	        <div class="load-bar">
+		    	<div class="load-bar-inner" style="width:0%"></div>
+		    	
+		  	</div>
+		  	<div class="txt">正在处理，请稍后...</div>
+	      	
+	    </div>
+    </div>
+    <div class="pop pop_tips">
+      <div class="pop_wrapper">
+        <div class="tips_cont">
+        	<div class="txt">出错了，请重试！</div>
+        	<div class="func"><button data-trigger="close">确定</button></div>
+      	</div>
+      </div>
+    </div>
+
+	
+</div>
+<script src="assets/js/libs/jquery-2.0.3.min.js"></script>
+<script src="assets/js/libs/doT.js"></script>
+<script src="assets/js/iSparta.js"></script>
+<script src="assets/js/iSparta.apng.js"></script>
+<script src="assets/js/iSparta.webp.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
