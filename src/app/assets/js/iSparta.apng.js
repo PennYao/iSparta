@@ -165,9 +165,8 @@
            
 			exec('"'+apngasm+'" "'+path+'" "'+url+'" '+rate+" 10"+" /l"+loop, {timeout: 10000}, function(e){
                 exec('"'+apngopt+'" "'+path+'" "'+path, {timeout: 10000}, function(e){
-                	
-                	var size=fs.statSync(path).size;
-                	files[id].apngsize=size;
+                	var size = fs.statSync(path).size;
+                	files[id].apngsize = size;
                     window.iSparta.apng.switch(id+1);
                 });
             });
@@ -484,7 +483,7 @@
 	            var path=fileList[i].path;
 	            var dirs={};
 	           	if(!fs.existsSync(path)){
-	           		console.log(fs.existsSync(path))
+	           		// console.log(fs.existsSync(path))
 	           		return false;
 	           	}
 	            if(fs.statSync(path).isDirectory()){

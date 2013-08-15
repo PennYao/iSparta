@@ -3,6 +3,7 @@
 	var win = gui.Window.get();
 	var os = require('os');
 	var version="1.0";
+	
 	window.iSparta ={
 		init:function(){
 			var ui=window.iSparta.ui;
@@ -56,7 +57,7 @@
 		checkVersion:function(){
 			var ui=this.ui;
 			$.get("http://zhijie.me/iSparta/data.php",{versioncheck:version},function(result){
-				console.log(result)
+				// console.log(result)
 				if(result=="new"){
 					
 				}else{
@@ -101,8 +102,8 @@
 			
 			$(".func_tab .tab_trigger>li").click(function(){
 
-				var trigger=$(".func_tab .tab_trigger>li");
-				var index=trigger.index($(this));
+				var trigger = $(".func_tab .tab_trigger>li");
+				var index = trigger.index($(this));
 				trigger.removeClass("active");
 				$(this).addClass("active");
 				$(this).closest(".func_tab").find(".tab_content>.cont").removeClass("active");
@@ -132,9 +133,9 @@
 			$(".pop_progress .load-bar-inner").css({width:progress*100+"%"})
 			$(".pop_progress .txt").html(txt);
 			$(".pop_progress").addClass("active");
-			$(".pop_progress  button[data-trigger='close']").one("click",function(){
+			$(".pop_progress  button[data-trigger='close']").one("click", function(){
 				if(clossCallback){
-				closeCallback();
+					closeCallback();
 				}
 				
 			});
@@ -149,7 +150,7 @@
 			$(".pop_tips .txt").html(txt);
 			
 			if(type==2){
-				console.log($(".pop_tips  button[data-trigger='yes']"))
+				// console.log($(".pop_tips  button[data-trigger='yes']"))
 				$(".pop_tips  button[data-trigger='yes']").show();
 				$(".pop_tips  button[data-trigger='yes']").on("click",function(){
 					if(yesCallback){
