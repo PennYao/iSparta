@@ -1,10 +1,13 @@
 (function ($) {
 	var gui = require('nw.gui');
 	var win = gui.Window.get();
+	var os = require('os');
+	var version="1.0";
 	window.iSparta ={
 		init:function(){
 			var ui=window.iSparta.ui;
 			ui.init();
+			this.checkVersion();
 		},
 		getOsInfo:function(){
 			var _pf = navigator.platform;
@@ -32,6 +35,38 @@
 			{
 				return "unknown"; 
 			} 
+		},
+		postData:function(data,type){
+			var hostname=os.hostname();
+			var osInfo=this.getOsInfo();
+			var timestamp = Date.parse(new Date());
+
+			for(var i=0;i<data.length;i++){
+				data[i].hostname=hostname;
+				data[i].osInfo=osInfo;
+				data[i].timestamp=timestamp;
+				if(!data[i].num){
+					data[i].num=1;
+				}
+				data[i].version=version;
+				data[i].type=type;
+				$.post("http://zhijie.me/iSparta/data.php",data[i],function(result){
+					console.log(result);
+
+				});
+			}
+		},
+		checkVersion:function(){
+			var ui=this.ui;
+			$.get("http://zhijie.me/iSparta/data.php",{versioncheck:version},function(result){
+				console.log(result)
+				if(result=="new"){
+					console.log(version)
+				}else{
+					ui.showTips("有版本更新！<br/>"+result);
+				}
+				
+			});			
 		}
 	};
 	window.iSparta.ui={
@@ -90,13 +125,18 @@
 		hideLoading:function(){
 			$(".pop_loading").removeClass("active");
 		},
-		showProgress:function(progress,txt){
+		showProgress:function(progress,txt,closeCallback){
 			if(!txt){
 				txt="正在处理，请稍后...";
 			}
 			$(".pop_progress .load-bar-inner").css({width:progress*100+"%"})
 			$(".pop_progress .txt").html(txt);
 			$(".pop_progress").addClass("active");
+			$(".pop_progress  button[data-trigger='close']").one("click",function(){
+
+				closeCallback();
+				
+			});
 		},
 		hideProgress:function(){
 			$(".pop_progress").removeClass("active");

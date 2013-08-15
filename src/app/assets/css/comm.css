@@ -66,6 +66,7 @@ body {overflow: hidden;}
 .pop_progress .load-bar-inner:after{background-image: -webkit-gradient(linear, left top, right bottom, color-stop(.25, rgba(255, 255, 255, .15)), color-stop(.25, transparent), color-stop(.5, transparent), color-stop(.5, rgba(255, 255, 255, .15)), color-stop(.75, rgba(255, 255, 255, .15)), color-stop(.75, transparent), to(transparent));display: block;content:"\0020";position: absolute;top:0px;width:100%;height:100%;background-size: 30px 30px;-webkit-animation: animate-stripes 3s linear infinite;
 }
  .pop_progress .txt { text-align: center;}
+ .pop_progress .func{text-align: center;margin-top:10px;}
  @-webkit-keyframes animate-stripes { 
 	0% {background-position: 0 0;}
 	100% {background-position: 60px 0;}

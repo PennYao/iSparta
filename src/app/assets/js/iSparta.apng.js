@@ -26,12 +26,15 @@
 			savePath:["parent","self"],
 			currentPath:[],
 			otherFiles:[],
+			mixListIndex:0,
 			savePathIndex:0,
 			currentPathIndex:0
 		},
 		fileList:[],
 		nums:0,
 		index:0,
+		isClose:false,
+		mixIndex:0,
 		init:function(){
 			localData=window.iSparta.localData;
 			var options=localData.getJSON("apng");
@@ -61,13 +64,18 @@
 					$(opt).attr("selected","selected");
 					var fileList=[{path:options.currentPath[i]}];
 					var otherFiles=[];
-					for(var j=0;j<options.otherFiles.length;j++){
-						if(options.currentPath[j]==options.otherFiles[j][0]){
-							for(var k=1;k<options.otherFiles[j].length;k++){
-								fileList.push({path:options.otherFiles[j][k]});
+					if(options.currentPath[i].indexOf("转换列表")==0){
+
+						fileList=[];
+						for(var j=0;j<options.otherFiles.length;j++){
+							if(options.currentPath[i]=="转换列表"+options.otherFiles[j].id){
+								for(var k=0;k<options.otherFiles[j].path.length;k++){
+									fileList.push({path:options.otherFiles[j].path[k]});
+								}
 							}
 						}
 					}
+					
 					this.ui.fillImglist(fileList);
 				}
 				$currentPath[0].options.add(opt);
@@ -102,14 +110,34 @@
 					}
 					id++;
 				}
-				if(id<files.length){
+				
+				if(id<files.length&&this.isClose==false){
 					var progress=(this.index+1)/this.nums;
-					window.iSparta.ui.showProgress(progress,"正在处理第"+(this.index+1)+"张(共"+this.nums+"张)图片");
+		
+					window.iSparta.ui.showProgress(progress,"正在处理第"+(this.index+1)+"张(共"+this.nums+"张)图片",function(){
+						window.iSparta.apng.isClose=true;
+					});
 					this.index++;
 					this.exec(id);
 				}else{
 					this.nums=0;
 					this.index=0;
+					var filesInfo=window.iSparta.apng.fileList[0].files;
+					
+					var Allinfo=[];
+					for(var i=0;i<filesInfo.length;i++){
+						if(filesInfo[i].selected==true){
+							var info={};
+							info.name=filesInfo[i].name;
+							info.beforesize=filesInfo[i].allPngSize;
+							info.aftersize=filesInfo[i].apngsize;
+
+							info.num=filesInfo[i].url.length;
+							Allinfo.push(info);
+						}
+					}
+					window.iSparta.postData(Allinfo,"apng");
+					this.isClose=false;
 					window.iSparta.ui.hideProgress();
 				}
 			}
@@ -129,19 +157,16 @@
             }else if(savePath=="self"){
             	var path=files[id].ppath+"\\"+name+".png";
             }
-            var osInfo=iSparta.getOsInfo();
-            if(osInfo=="win32"||osInfo=="win64"){
-				var apngasm = process.cwd() + '\\app\\libs\\apng\\'+iSparta.getOsInfo()+'\\apngasm.exe';
-            	var apngopt = process.cwd() + '\\app\\libs\\apng\\'+iSparta.getOsInfo()+'\\apngopt.exe';
-            }else{
-				var apngasm = process.cwd() + '\\app\\libs\\apng\\'+iSparta.getOsInfo()+'\\apngasm';
-            	var apngopt = process.cwd() + '\\app\\libs\\apng\\'+iSparta.getOsInfo()+'\\apngopt';             	
-            }
             
+            var apngasm = process.cwd() + '\\app\\libs\\apng\\'+iSparta.getOsInfo()+'\\apngasm.exe';
+            var apngopt = process.cwd() + '\\app\\libs\\apng\\'+iSparta.getOsInfo()+'\\apngopt.exe';
            
-			exec(apngasm+' "'+path+'" "'+url+'" '+rate+" 10"+" /l"+loop, {timeout: 10000}, function(e){
-                exec(apngopt+' "'+path+'" "'+path, {timeout: 10000}, function(e){
-                   window.iSparta.apng.switch(id+1);
+			exec('"'+apngasm+'" "'+path+'" "'+url+'" '+rate+" 10"+" /l"+loop, {timeout: 10000}, function(e){
+                exec('"'+apngopt+'" "'+path+'" "'+path, {timeout: 10000}, function(e){
+                	
+                	var size=fs.statSync(path).size;
+                	files[id].apngsize=size;
+                    window.iSparta.apng.switch(id+1);
                 });
             });
 		}
@@ -194,17 +219,23 @@
 				return false;
 			};
 			$boxPreview[0].ondrop = function(e) {
+				var apng=window.iSparta.apng;
 				e.preventDefault();
 				$dragArea.removeClass("hover");
 				e.preventDefault(); //取消默认浏览器拖拽效果
-		        var fileList = e.dataTransfer.files; //获取文件对象
-		        var opt=new Option(fileList[0].path,fileList[0].path);
-		        $(opt).attr("selected","selected");
-				$currentPath[0].insertBefore(opt,$currentPath[0].options[0]);
-				
-
-		        ui.dataHelper.changeCurrentPath(fileList);
-		        ui.fillImglist(fileList);
+		        var otherFiles = e.dataTransfer.files; //获取文件对象
+		        apng.options.mixListIndex++;
+		        var mixIndex=apng.options.mixListIndex;
+		        //var opt=new Option(fileList[0].path,fileList[0].path);
+		        var v=ui.fillImglist(otherFiles);
+		        if(v){
+			        var fileList="转换列表"+mixIndex;
+			        var opt=new Option("转换列表"+mixIndex,"转换列表"+mixIndex);
+			        $(opt).attr("selected","selected");
+					$currentPath[0].insertBefore(opt,$currentPath[0].options[0]);
+		        	ui.dataHelper.changeCurrentPath(fileList,otherFiles);
+		        }
+		        
 				return false;
 			};
 			$dragArea.click(function(e) {
@@ -213,12 +244,16 @@
 			$hPath.on("change",function(e){
 				var fileList = e.delegateTarget.files; //获取文件对象
 				var val=$(this).val();
-				var opt=new Option(val,val);
-				$(opt).attr("selected","selected");
-				$currentPath[0].insertBefore(opt,$currentPath[0].options[0]);
-				ui.dataHelper.changeCurrentPath(val);
+				if(ui.fillImglist(fileList)){
+					var opt=new Option(val,val);
+					$(opt).attr("selected","selected");
+					$currentPath[0].insertBefore(opt,$currentPath[0].options[0]);
 				
-		        ui.fillImglist(fileList);
+				
+		        
+		        	ui.dataHelper.changeCurrentPath(val);
+		        }
+		        
 				return false;
 			});
 		},
@@ -229,11 +264,20 @@
 	        window.iSparta.ui.showLoading();
 	        window.iSparta.apng.fileManager.walk(fileList,function(){});
 	       	window.iSparta.ui.hideLoading();
+
 	        var datas={};
 	        datas.all=window.iSparta.apng.fileList;
-	        var doTtmpl = doT.template(tmplFileList);
-	        var html=doTtmpl(datas);
-	        $boxPreview.html(html);
+	       
+	        if(datas.all.length==0){
+	        	window.iSparta.ui.showTips("文件名序列化！");
+	        	return false;
+	        }else{
+	        	var doTtmpl = doT.template(tmplFileList);
+	        	var html=doTtmpl(datas);
+	        	$boxPreview.html(html);
+	        	return true;
+	        }
+	        
 		},
 		items:function(){
 			var timer=null;
@@ -292,16 +336,23 @@
 			$currentPath.on("change",function(){
 				var options=window.iSparta.apng.options;
 				var path=$(this).val();
-				var fileList=[{path:path}];
-				for(var i=0;i<options.otherFiles.length;i++){
-					if(path==options.otherFiles[i][0]){
-						for(var j=1;j<options.otherFiles[i].length;j++){
-							fileList.push({path:options.otherFiles[i][j]});
+
+				if(path.indexOf("转换列表")==0){
+					var fileList=[];
+					for(var j=0;j<options.otherFiles.length;j++){
+
+						if(path=="转换列表"+options.otherFiles[j].id){
+							for(var k=0;k<options.otherFiles[j].path.length;k++){
+								fileList.push({path:options.otherFiles[j].path[k]});
+							}
 						}
 					}
+				}else{
+					var fileList=[{path:path}];
 				}
-				ui.fillImglist(fileList);
 				ui.dataHelper.changeCurrentPath($(this).val());
+				ui.fillImglist(fileList);
+				
 
 			});
 			$btnCurrentPath.on("click",function(){
@@ -356,12 +407,13 @@
 			}
 			
 		},
-		changeCurrentPath:function(currentPath){
+		changeCurrentPath:function(currentPath,theOtherFiles){
 			var apng=window.iSparta.apng;
 			var theCurrentPath=apng.options.currentPath;
-			if(currentPath instanceof Object){
+			
+			if(currentPath.indexOf("转换列表")==0){
 				for(var i=0;i<theCurrentPath.length;i++){
-					if(currentPath[0]==theCurrentPath[i]){
+					if(currentPath==theCurrentPath[i]){
 						break;
 					}
 				}
@@ -373,15 +425,15 @@
 					if(apng.options.currentPath.length>4){
 						apng.options.currentPath.splice(4,1);
 					}
-					apng.options.currentPath.unshift(currentPath[0].path);
+					apng.options.currentPath.unshift(currentPath);
 					var len=apng.options.currentPath.length;
 					apng.options.currentPathIndex=0;
-					var otherFiles=[];
-					// for(var i=0;i<currentPath.length;i++){
-					// 	otherFiles.push(currentPath[i].path);
-					// }
+					var otherFiles={id:apng.options.mixListIndex,path:[]};
+					for(var i=0;i<theOtherFiles.length;i++){
+						otherFiles.path.push(theOtherFiles[i].path);
+					}
 					
-					// apng.options.otherFiles.push(otherFiles);
+					apng.options.otherFiles.push(otherFiles);
 					
 					window.iSparta.localData.setJSON("apng",apng.options);
 				}
@@ -414,6 +466,7 @@
 	    length:-1,
 	    nowLen:0,
 	    names:[],
+	    allsize:0,
 	    walk:function(fileList,callback){
 	        // 一次只拉一个文件夹
 	        var apng=window.iSparta.apng;
@@ -437,7 +490,7 @@
 	                //if(fileWalk.length==0||url!=fileWalk.allFileList[fileWalk.length].url){
 	                    dirs.url=url;
 	                    dirs.files=[];
-	                    if(this.nowLen!=this.length||(this.length==0&&(!this.allFileList[this.length]||url!=apng.fileList[this.length].url))){
+	                    if(this.nowLen!=this.length||(this.length==0&&(!apng.fileList[this.length]||url!=apng.fileList[this.length].url))){
 	                        apng.fileList.push(dirs);
 	                    }
 	                    if(this.nowLen!=this.length){
@@ -475,7 +528,11 @@
 	            var repeatIndex=-1;
 	           
 	            var allfile=apng.fileList[this.length].files;
+	            var stat=fs.statSync(path);
+	            var size=stat.size;
+	            path2=path;
 	            path=path.replace(/\d+\.png$/i,"");
+	            
 	            var ppath=path.substring(0,path.lastIndexOf("\\"));
 	            var pppath=ppath.substring(0,ppath.lastIndexOf("\\"));
 	            var name=path.substring(path.lastIndexOf("\\")+1,path.length);
@@ -483,10 +540,7 @@
 	                name=path.substring(0,path.lastIndexOf("\\"));
 	                name=name.substring(name.lastIndexOf("\\")+1,name.length);
 	            }
-	            
-	            
 	            var index=0;
-	            
 	            for(var i=0;i<this.names.length;i++){
 	                if(name==this.names[i]){
 	                    
@@ -512,20 +566,22 @@
 	            }
 	            if(allfile.length!=0&&repeatIndex!=-1){
 	                allfile[repeatIndex].url.push(url);
-	            }else{
+	                allfile[repeatIndex].allPngSize+=size;
 
+	            }else{
 	                if(allfile.length!=0&&allfile[allfile.length-1].url.length==1){
 	                    allfile.splice(allfile.length-1,1);
 	                }
-	               
-	                var file={path:path,ppath:ppath,pppath:pppath,selected:true};
+	                var file={path2:path,path:path,ppath:ppath,pppath:pppath,selected:true};
 	                file.url=[];
 	                
 	                
 	                file.name=name;
+	                file.allPngSize=size;
 	                this.names.push(name);
 	                file.url.push(url);
 	                allfile.push(file);
+	                file.allPngSize=0;
 	            }
 	        }
 	    },
