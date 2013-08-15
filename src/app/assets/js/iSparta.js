@@ -2,7 +2,7 @@
 	var gui = require('nw.gui');
 	var win = gui.Window.get();
 	var os = require('os');
-	var version="0.0";
+	var version="1.0";
 	window.iSparta ={
 		init:function(){
 			var ui=window.iSparta.ui;

@@ -1,0 +1,8 @@
+.thumbnail {
+	width: 135px;
+	height: 135px;
+	display: block;
+	float: left;
+	margin: 8px;
+	border: 2px solid #888;
+}

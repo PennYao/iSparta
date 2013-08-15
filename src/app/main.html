@@ -14,20 +14,15 @@
 			<li><span class="close">&times;</span></li>
 		</ul>
 	</div>
-	<!-- <div class="progress"></div> -->
+
 	<div id="content">
 		<div class="func_tab">
 			<ul class="tab_trigger">
-				<li>PNG转WebP</li>
 				<li class="active">PNG转APNG</li>
+				<li>PNG转WebP</li>
 			</ul>
 			<div class="tab_content">
-				<div id="pngToWebp" class="cont">
-					<div class="empty">
-						<span class="drag_area">+</span>
-						<input class="hide" type="file" multiple webkitdirectory />
-					</div>
-				</div>
+
 				<div id="pngToApng" class="cont active">
 					<div class="box_setting clearfix">
 						<div class="option">
@@ -59,11 +54,9 @@
 				          </div>
 				          <div class="option">
 								<label>输出目录</label>
-								<select class="folder_select" id="apng_select_savePath">
-									
-								</select>
+								<select class="folder_select" id="apng_select_savePath"></select>
 								<button id="apng_btn_savePath">选择目录</button>
-								<input class="hide" type="file" id="apng_savePath_hidden"  nwdirectory/>
+								<input class="hide" type="file" id="apng_savePath_hidden" nwdirectory/>
 							</div>
 				          <div class="func">
 				          	<button class="custom_button btn_strong" id="apng_btn_cov">开始转换</button>
@@ -72,7 +65,6 @@
 					<div class="box_preview">
 						<div class="empty">
 							<span class="drag_area">+</span>
-							
 						</div>
 						<script id="apng_tmpl_filelist" type="text/template">
 			              {{ for (var i = 0; i < it.all.length; i++) { }}
@@ -95,21 +87,70 @@
 					<div class="box_status clearfix">
 						<div class="option">
 							<label>当前目录</label>
-							<select class="folder_select" id="apng_select_currentPath">
-								
-							</select>
+							<select class="folder_select" id="apng_select_currentPath"></select>
 							<input class="hide" type="file" id="apng_path_hidden" nwdirectory/>
 							<button id="apng_btn_currentPath">选择目录</button>
 							<button id="apng_currentPath_refresh">刷新</button>
 						</div>
-						
 					</div>
 				</div>
+
+
+				<div id="pngToWebp" class="cont">
+					<div class="box_setting clearfix">
+						<div class="option">
+							<label>压缩配置</label>
+					         <select id="webp_select_config">
+					            <option value ="">自动</option>
+					            <option value ="">有损</option>
+					            <option value="-lossless">无损</option>
+					         </select>
+				         </div>
+				         
+				         <div class="option">
+					         <label>压缩比</label>
+					          <select id="webp_select_ratio">
+					          	<option value ="75">自动</option>
+					            <option value ="100">100</option>
+					            <option value ="75">75</option>
+					            <option value="50">50</option>
+					            <option value="25">25</option>
+					          </select>
+				          </div>
+				          <div class="option">
+								<label>输出目录</label>
+								<select class="folder_select" id="webp_select_savePath"></select>
+								<button id="webp_btn_savePath">选择目录</button>
+								<input class="hide" type="file" id="webp_savePath_hidden" nwdirectory/>
+							</div>
+				          <div class="func">
+				          	<button class="custom_button btn_strong" id="webp_btn_cov">开始转换</button>
+				          </div>
+					</div>
+
+					<div class="box_preview">
+						<div class="empty">
+							<span class="drag_area">+</span>
+						</div>
+					</div>
+
+					<div class="box_status clearfix">
+						<div class="option">
+							<label>当前目录</label>
+							<select class="folder_select" id="webp_select_currentPath"></select>
+							<input class="hide" type="file" id="webp_path_hidden" nwdirectory/>
+							<button id="webp_btn_currentPath">选择目录</button>
+							<button id="webp_currentPath_refresh">刷新</button>
+						</div>
+					</div>
+				</div>
+
+
 			</div>
 		</div>
-
 		
 	</div>
+
 	<div class="pop pop_loading">
       <div class="pop_wrapper">
         <div class="loading_cont">
@@ -120,27 +161,25 @@
       </div>
       </div>
     </div>
+
     <div class="pop pop_progress">
       	<div class="pop_wrapper">
 	        <div class="load-bar">
 		    	<div class="load-bar-inner" style="width:0%"></div>
-		    	
 		  	</div>
 		  	<div class="txt">正在处理，请稍后...</div>
-		  	<div class="func"><button data-trigger="close">取消</button></div>
-	      	
 	    </div>
     </div>
+
     <div class="pop pop_tips">
       <div class="pop_wrapper">
         <div class="tips_cont">
         	<div class="txt">出错了，请重试！</div>
-        	<div class="func"><button data-trigger="yes" style="display:none;">确定</button><button data-trigger="close">取消</button></div>
+        	<div class="func"><button data-trigger="close">确定</button></div>
       	</div>
       </div>
     </div>
 
-	
 </div>
 <script src="assets/js/libs/jquery-2.0.3.min.js"></script>
 <script src="assets/js/libs/doT.js"></script>
