@@ -2,7 +2,7 @@
 	var gui = require('nw.gui');
 	var win = gui.Window.get();
 	var os = require('os');
-	var version="0.0";
+	var version="1.0";
 	window.iSparta ={
 		init:function(){
 			var ui=window.iSparta.ui;
@@ -133,8 +133,9 @@
 			$(".pop_progress .txt").html(txt);
 			$(".pop_progress").addClass("active");
 			$(".pop_progress  button[data-trigger='close']").one("click",function(){
-
+				if(clossCallback){
 				closeCallback();
+				}
 				
 			});
 		},
@@ -151,14 +152,19 @@
 				console.log($(".pop_tips  button[data-trigger='yes']"))
 				$(".pop_tips  button[data-trigger='yes']").show();
 				$(".pop_tips  button[data-trigger='yes']").on("click",function(){
-					yesCallback();
+					if(yesCallback){
+						yesCallback();
+					}
 					$(".pop_tips").removeClass("active");
 				});
 			}else{
 				$(".pop_tips  button[data-trigger='yes']").hide();
 			}
 			$(".pop_tips  button[data-trigger='close']").one("click",function(){
-				closeCallback();
+				if(closeCallback){
+					closeCallback();
+				}
+				
 			});			
 			$(".pop_tips").addClass("active");
 		},

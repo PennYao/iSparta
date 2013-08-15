@@ -76,7 +76,9 @@
 						}
 					}
 					
-					this.ui.fillImglist(fileList);
+					if(!this.ui.fillImglist(fileList)){
+
+					}
 				}
 				$currentPath[0].options.add(opt);
 		        
@@ -262,14 +264,19 @@
 	            return false;
 	        }
 	        window.iSparta.ui.showLoading();
-	        window.iSparta.apng.fileManager.walk(fileList,function(){});
+	        if(!window.iSparta.apng.fileManager.walk(fileList,function(){})){
+
+	        	window.iSparta.ui.hideLoading();
+	        	return false;
+
+	        };
 	       	window.iSparta.ui.hideLoading();
 
 	        var datas={};
 	        datas.all=window.iSparta.apng.fileList;
 	       
 	        if(datas.all.length==0){
-	        	window.iSparta.ui.showTips("文件名序列化！");
+	        	window.iSparta.ui.showTips("文件名需序列化！");
 	        	return false;
 	        }else{
 	        	var doTtmpl = doT.template(tmplFileList);
@@ -476,6 +483,10 @@
 	        for(var i=0;i<fileList.length;i++){
 	            var path=fileList[i].path;
 	            var dirs={};
+	           	if(!fs.existsSync(path)){
+	           		console.log(fs.existsSync(path))
+	           		return false;
+	           	}
 	            if(fs.statSync(path).isDirectory()){
 	                var url=path.substring(0,path.lastIndexOf("\\"));
 	                dirs.url=url;
@@ -518,6 +529,7 @@
 	        if((typeof callback)=='function'){
 	        	callback();
 	        }
+	        return true;
 	    },
 	    walkFile:function(path){
 	        //var apng={name:name};
