@@ -52,6 +52,7 @@ body {overflow: hidden;}
 .pop_tips{text-align: center;}
 .pop_tips .pop_wrapper{max-width:300px;min-width:150px;}
 .pop_tips .func{padding-top:10px;}
+.pop_tips button{margin-right: 10px !important;}
 
 .pop.active{-webkit-transform:scale(1);pointer-events:auto;opacity: 1;}
 .pop.active .pop_wrapper{-webkit-transform:scale(1);opacity: 1;}

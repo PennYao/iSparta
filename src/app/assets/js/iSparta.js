@@ -2,7 +2,7 @@
 	var gui = require('nw.gui');
 	var win = gui.Window.get();
 	var os = require('os');
-	var version="1.0";
+	var version="0.0";
 	window.iSparta ={
 		init:function(){
 			var ui=window.iSparta.ui;
@@ -50,10 +50,7 @@
 				}
 				data[i].version=version;
 				data[i].type=type;
-				$.post("http://zhijie.me/iSparta/data.php",data[i],function(result){
-					console.log(result);
-
-				});
+				$.post("http://zhijie.me/iSparta/data.php",data[i],function(result){});
 			}
 		},
 		checkVersion:function(){
@@ -61,9 +58,12 @@
 			$.get("http://zhijie.me/iSparta/data.php",{versioncheck:version},function(result){
 				console.log(result)
 				if(result=="new"){
-					console.log(version)
+					
 				}else{
-					ui.showTips("有版本更新！<br/>"+result);
+					ui.showTips("有版本更新！前往下载！",2,function(){
+						gui.Shell.openExternal(result);
+					});
+
 				}
 				
 			});			
@@ -141,11 +141,25 @@
 		hideProgress:function(){
 			$(".pop_progress").removeClass("active");
 		},
-		showTips:function(txt){
+		showTips:function(txt,type,yesCallback,closeCallback){
 			if(!txt){
 				txt="出错了，请重试！";
 			}
 			$(".pop_tips .txt").html(txt);
+			
+			if(type==2){
+				console.log($(".pop_tips  button[data-trigger='yes']"))
+				$(".pop_tips  button[data-trigger='yes']").show();
+				$(".pop_tips  button[data-trigger='yes']").on("click",function(){
+					yesCallback();
+					$(".pop_tips").removeClass("active");
+				});
+			}else{
+				$(".pop_tips  button[data-trigger='yes']").hide();
+			}
+			$(".pop_tips  button[data-trigger='close']").one("click",function(){
+				closeCallback();
+			});			
 			$(".pop_tips").addClass("active");
 		},
 		hideTips:function(){
