@@ -133,8 +133,9 @@
 			$(".pop_progress .txt").html(txt);
 			$(".pop_progress").addClass("active");
 			$(".pop_progress  button[data-trigger='close']").one("click",function(){
-
+				if(clossCallback){
 				closeCallback();
+				}
 				
 			});
 		},
@@ -151,14 +152,19 @@
 				console.log($(".pop_tips  button[data-trigger='yes']"))
 				$(".pop_tips  button[data-trigger='yes']").show();
 				$(".pop_tips  button[data-trigger='yes']").on("click",function(){
-					yesCallback();
+					if(yesCallback){
+						yesCallback();
+					}
 					$(".pop_tips").removeClass("active");
 				});
 			}else{
 				$(".pop_tips  button[data-trigger='yes']").hide();
 			}
 			$(".pop_tips  button[data-trigger='close']").one("click",function(){
-				closeCallback();
+				if(closeCallback){
+					closeCallback();
+				}
+				
 			});			
 			$(".pop_tips").addClass("active");
 		},
