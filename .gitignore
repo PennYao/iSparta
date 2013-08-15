@@ -2,4 +2,8 @@ src/icudt.dll
 src/nw.exe
 src/nw.pak
 src/app/libs/
+<<<<<<< HEAD
 src/app/data.php
+=======
+src/app/data.php
+>>>>>>> origin
