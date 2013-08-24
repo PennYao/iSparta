@@ -58,6 +58,7 @@
 			var ui=this.ui;
 			$.get("http://zhijie.me/iSparta/data.php",{versioncheck:version},function(result){
 				// console.log(result)
+				console.log(result)
 				if(result=="new"){
 					
 				}else{

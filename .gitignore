@@ -1,9 +1,7 @@
 src/icudt.dll
-src/nw.exe
+src/iSparta.exe
+src/iSparta.ico
+src/iSparta.png
 src/nw.pak
 src/app/libs/
-<<<<<<< HEAD
 src/app/data.php
-=======
-src/app/data.php
->>>>>>> origin

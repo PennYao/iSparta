@@ -1,10 +1,11 @@
 {
 	"name": "iSparta",
 	"main": "app/main.html",
-	"version": "1.0.0",
+	"version": "1.0",
 	"keywords": ["WebP", "APNG"],
 	"window": {
-		"toolbar": true,
+		"icon": "iSparta.png",
+		"toolbar": false,
 		"width": 800,
 		"height": 600,
 		"resizable": false,
