@@ -4,7 +4,7 @@
 	"version": "1.0.0",
 	"keywords": ["WebP", "APNG"],
 	"window": {
-		"toolbar": true,
+		"toolbar": false,
 		"width": 800,
 		"height": 600,
 		"resizable": false,
