@@ -95,9 +95,11 @@
 			var dirName = currentPath.substring(currentPath.lastIndexOf('\\')+1) + '_webp';
 
 			if(savePath == 'parent') {
-				var finalSavePath = tempPath.substring(0, tempPath.lastIndexOf('\\')) + '\\' + dirName + '\\';
-			}else if(savePath == 'self') {
+				// var finalSavePath = tempPath.substring(0, tempPath.lastIndexOf('\\')) + '\\' + dirName + '\\';
 				var finalSavePath = currentPath.substring(0, currentPath.lastIndexOf('\\')) + '\\' + dirName + '\\';
+			}else if(savePath == 'self') {
+				// var finalSavePath = currentPath.substring(0, currentPath.lastIndexOf('\\')) + '\\' + dirName + '\\';
+				var finalSavePath = currentPath + '\\' + dirName + '\\';
 			}else {
 				var finalSavePath = savePath + '\\' + dirName + '\\';
 			}
