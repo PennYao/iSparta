@@ -75,9 +75,10 @@
 							}
 						}
 					}
-					
+		
 					if(!this.ui.fillImglist(fileList)){
 
+						//window.iSparta.ui.showTips("目录读取失败！请确认文件目录是否存在");
 					}
 				}
 				$currentPath[0].options.add(opt);
@@ -266,6 +267,7 @@
 	        if(!window.iSparta.apng.fileManager.walk(fileList,function(){})){
 
 	        	window.iSparta.ui.hideLoading();
+	        	window.iSparta.ui.showTips("目录读取失败！请确认文件目录是否存在！");
 	        	return false;
 
 	        };
@@ -367,11 +369,21 @@
 			
 			$refresh.on("click",function(){
 				var path=$currentPath.val();
-				if(path){
+				var options=window.iSparta.apng.options;
+				if(path.indexOf("转换列表")==0){
+					var fileList=[];
+					for(var j=0;j<options.otherFiles.length;j++){
+
+						if(path=="转换列表"+options.otherFiles[j].id){
+							for(var k=0;k<options.otherFiles[j].path.length;k++){
+								fileList.push({path:options.otherFiles[j].path[k]});
+							}
+						}
+					}
+				}else{
 					var fileList=[{path:path}];
-					ui.fillImglist(fileList);
-				}
-				
+				}		
+				ui.fillImglist(fileList);		
 				return false;
 			});
 

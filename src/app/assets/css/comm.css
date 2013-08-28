@@ -2,7 +2,8 @@ body {overflow: hidden;}
 #wrapper {font-family: "Microsoft Yahei";width: 800px;height: 600px;}
 /*top条*/
 #topbar {height: 40px;background-color:#111;position: relative;z-index: 99999;}
-#topbar h1 {width: 720px; color: #ccc; line-height: 40px; text-indent: 2em; font-size: 14px; -webkit-user-select: none; -webkit-app-region: drag; float: left; }
+#topbar h1 {width: 720px; color: #ccc; line-height: 40px; text-indent: 1em; font-size: 14px; -webkit-user-select: none; -webkit-app-region: drag; float: left; }
+#topbar h1 img{width:24px;height:24px;position: relative;top:6px;margin-right:5px;}
 .nav {float: right; }
 .nav li {display: inline-block; }
 .nav li span{display: block; width: 30px; height: 40px; text-align: center; line-height: 40px; font-weight: 700; color: #eee; }
