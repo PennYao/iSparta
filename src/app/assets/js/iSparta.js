@@ -8,7 +8,7 @@
 	window.iSparta = {
 
 		init: function() {
-			var ui = Swindow.iSparta.ui;
+			var ui = window.iSparta.ui;
 			ui.init();
 			this.checkVersion();
 		},

@@ -109,9 +109,9 @@
 			if(!fs.existsSync(finalSavePath)) {
 				fs.mkdirSync(finalSavePath)
 			}
-	       	
-	       	if(window.iSparta.webp.isDir) {
-	       		fs.readdir(dir, function(err, files) {
+
+			if(window.iSparta.webp.isDir) {
+				fs.readdir(dir, function(err, files) {
 					if (err) {
 						window.iSparta.ui.showTips("读取文件夹出错！");
 						$boxPreview.append('<div class="empty"><span class="drag_area">+</span></div>')
@@ -120,29 +120,29 @@
 							var progress=(i+1)/files.length;
 
 							if(files[i].indexOf('.jpg') != -1 || files[i].indexOf('.png') != -1){
-								// console.log('"'+cwebp+'"'+param+'"'+currentPath + '\\' +files[i]+'"'+ ' -o ' + '"' +
+								// console.log('"'+cwebp+'" '+param+'"'+currentPath + '\\' +files[i]+'"'+ ' -o ' + '"' +
 								//  finalSavePath + files[i].substring(0, files[i].lastIndexOf('.')) + '.webp"');
 
-								exec('"'+cwebp+'"'+param+'"'+currentPath + '\\' +files[i]+'"'+ ' -o ' + '"' +
+								exec('"'+cwebp+'" '+param+'"'+currentPath + '\\' +files[i]+'"'+ ' -o ' + '"' +
 								 finalSavePath + files[i].substring(0, files[i].lastIndexOf('.')) + '.webp"');
 							}
 						}
 						window.iSparta.ui.showTips("转换完成！");
 					}
 				});
-	       	}else {
-	       		var files = window.iSparta.webp.fileList;
-	       		for(var i=0; i<files.length; i++){
-	       			if(files[i].path.indexOf('.jpg') != -1 || files[i].path.indexOf('.png') != -1){
+			}else {
+				var files = window.iSparta.webp.fileList;
+				for(var i=0; i<files.length; i++){
+					if(files[i].path.indexOf('.jpg') != -1 || files[i].path.indexOf('.png') != -1){
 						// console.log('"'+cwebp+'"'+param+'"'+currentPath + '\\' +files[i].name+'"'+ ' -o ' + '"' +
 						//  finalSavePath + files[i].name.substring(0, files[i].name.lastIndexOf('.')) + '.webp"');
 
-						exec('"'+cwebp+'"'+param+'"'+currentPath + '\\' +files[i].name+'"'+ ' -o ' + '"' +
+						exec('"'+cwebp+'" '+param+'"'+currentPath + '\\' +files[i].name+'"'+ ' -o ' + '"' +
 						 finalSavePath + files[i].name.substring(0, files[i].name.lastIndexOf('.')) + '.webp"');
 					}
-	       		}
-	       		window.iSparta.ui.showTips("转换完成！");
-	       	}
+				}
+				window.iSparta.ui.showTips("转换完成！");
+			}
 		}
 	},
 
