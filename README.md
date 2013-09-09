@@ -12,6 +12,7 @@ Webp、apng转换工具
 |  |-nw.exe
 |  |-app
 |     |-main.html
+|     |-iSparta.png
 |     |-libs
 |     |  |-apng(libs)
 |     |  |-webp(libs)
