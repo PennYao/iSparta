@@ -1,25 +1,28 @@
 (function ($) {
+
 	var exec = require('child_process').exec,
 		os = require('os'),
 		fs = require('fs'),
 		gui = require('nw.gui');
-	var $loop=$("#apng_select_loop"),
-		$rate=$("#apng_select_rate"),
-		$savePath=$("#apng_select_savePath"),
-		$currentPath=$("#apng_select_currentPath"),
-		$btnCurrentPath=$("#apng_btn_currentPath"),
-		$refresh=$("#apng_currentPath_refresh"),
-		$btnSavePath=$("#apng_btn_savePath"),
-		$hSavePath=$("#apng_savePath_hidden"),
-		$hPath=$("#apng_path_hidden"),
-		$btnCov=$("#apng_btn_cov"),
-		$dragArea=$("#pngToApng .drag_area"),
-		$boxPreview=$("#pngToApng .box_preview"),
+
+	var $loop = $("#apng_select_loop"),
+		$rate = $("#apng_select_rate"),
+		$savePath = $("#apng_select_savePath"),
+		$currentPath = $("#apng_select_currentPath"),
+		$btnCurrentPath = $("#apng_btn_currentPath"),
+		$refresh = $("#apng_currentPath_refresh"),
+		$btnSavePath = $("#apng_btn_savePath"),
+		$hSavePath = $("#apng_savePath_hidden"),
+		$hPath = $("#apng_path_hidden"),
+		$btnCov = $("#apng_btn_cov"),
+		$dragArea = $("#pngToApng .drag_area"),
+		$boxPreview = $("#pngToApng .box_preview"),
 		
-		$itemOpenPos=$("#pngToApng .imglist .icon-folder-open"),
+		$itemOpenPos = $("#pngToApng .imglist .icon-folder-open"),
 		tmplFileList = $('#apng_tmpl_filelist').html();
 	
-	window.iSparta.apng ={
+	window.iSparta.apng = {
+
 		options:{
 			loop:0,
 			rate:1,
@@ -30,20 +33,22 @@
 			savePathIndex:0,
 			currentPathIndex:0
 		},
+
 		fileList:[],
 		nums:0,
 		index:0,
 		isClose:false,
 		mixIndex:0,
-		init:function(){
-			localData=window.iSparta.localData;
-			var options=localData.getJSON("apng");
+
+		init: function() {
+			localData = window.iSparta.localData;
+			var options = localData.getJSON("apng");
 			$.extend(this.options,options);
 			
-			options=this.options;
+			options = this.options;
 			$loop.val(options.loop);
 			$rate.val(options.rate);
-			for(var i=0;i<options.savePath.length;i++){
+			for(var i=0; i<options.savePath.length; i++){
 				if(options.savePath[i]=="parent"){
 					var opt=new Option("上级目录",options.savePath[i]);
 				}else if(options.savePath[i]=="self"){
@@ -56,9 +61,9 @@
 					$(opt).attr("selected","selected");
 				}
 				$savePath[0].options.add(opt);
-		        
 			}
-			for(var i=0;i<options.currentPath.length;i++){
+
+			for(var i=0; i<options.currentPath.length; i++){
 				var opt=new Option(options.currentPath[i],options.currentPath[i]);
 				if(i==options.currentPathIndex){
 					$(opt).attr("selected","selected");
@@ -77,7 +82,6 @@
 					}
 		
 					if(!this.ui.fillImglist(fileList)){
-
 						//window.iSparta.ui.showTips("目录读取失败！请确认文件目录是否存在");
 					}
 				}
@@ -86,7 +90,8 @@
 			}
 			this.ui.init();
 		},
-		switch:function(id){
+
+		switch: function(id) {
 			if(!this.fileList[0]){
 				window.iSparta.ui.showTips("未选择任何图片！");
 				return;
@@ -144,10 +149,9 @@
 					window.iSparta.ui.hideProgress();
 				}
 			}
-			
-
 		},
-		exec:function(id){
+
+		exec: function(id) {
    			var loop=this.options.loop;
 			var rate=this.options.rate;
 			var savePath=this.options.savePath[this.options.savePathIndex];
@@ -173,17 +177,21 @@
             });
 		}
 	};
+
 	// 界面操作
-	window.iSparta.apng.ui={
-		dataHelper:{},
-		init:function(){
-			this.dataHelper=window.iSparta.apng.dataHelper;
+	window.iSparta.apng.ui = {
+
+		dataHelper: {},
+
+		init: function() {
+			this.dataHelper = window.iSparta.apng.dataHelper;
 			this.topbar();
 			this.preview();
 			this.items();
 			this.status();
 		},
-		topbar:function(){
+
+		topbar: function() {
 			var ui=this;
 			$loop.on("change",function(){
 				ui.dataHelper.changeLoop($(this).val());
@@ -209,7 +217,8 @@
 				window.iSparta.apng.switch();
 			});
 		},
-		preview:function(){
+
+		preview: function() {
 			var ui=this;
 			$boxPreview[0].ondragover = function() { 
 				$dragArea.addClass("hover");
@@ -259,7 +268,8 @@
 				return false;
 			});
 		},
-		fillImglist:function(fileList){
+
+		fillImglist: function(fileList) {
 			if(fileList.length == 0){
 	            return false;
 	        }
@@ -285,9 +295,9 @@
 	        	$boxPreview.html(html);
 	        	return true;
 	        }
-	        
 		},
-		items:function(){
+
+		items: function() {
 			var timer=null;
 			var ui=this;
 			var urlIndex=0;
@@ -339,7 +349,8 @@
 		        fileList[pid].files[id].name=name;
 		    });
 		},
-		status:function(){
+
+		status: function() {
 			var ui=this;
 			$currentPath.on("change",function(){
 				var options=window.iSparta.apng.options;
@@ -389,19 +400,23 @@
 
 		}
 	};
+
 	// 数据控制
-	window.iSparta.apng.dataHelper={
-		changeLoop:function(loop){
+	window.iSparta.apng.dataHelper = {
+
+		changeLoop: function(loop) {
 			var apng=window.iSparta.apng;
 			apng.options.loop=loop;
 			window.iSparta.localData.setJSON("apng",apng.options);
 		},
-		changeRate:function(rate){
+
+		changeRate: function(rate) {
 			var apng=window.iSparta.apng;
 			apng.options.rate=rate;
 			window.iSparta.localData.setJSON("apng",apng.options);
 		},
-		changeSavaPath:function(savePath){
+
+		changeSavaPath: function(savePath) {
 			var apng=window.iSparta.apng;
 			var theSavePath=apng.options.savePath;
 			for(var i=0;i<theSavePath.length;i++){
@@ -423,9 +438,9 @@
 				apng.options.savePathIndex=0;
 				window.iSparta.localData.setJSON("apng",apng.options);
 			}
-			
 		},
-		changeCurrentPath:function(currentPath,theOtherFiles){
+
+		changeCurrentPath: function(currentPath,theOtherFiles) {
 			var apng=window.iSparta.apng;
 			var theCurrentPath=apng.options.currentPath;
 			
@@ -479,13 +494,16 @@
 			
 		}
 	};
+
 	// 文件目录递归与操作
-	window.iSparta.apng.fileManager={
+	window.iSparta.apng.fileManager = {
+
 	    length:-1,
 	    nowLen:0,
 	    names:[],
 	    allsize:0,
-	    walk:function(fileList,callback){
+
+	    walk: function(fileList,callback) {
 	        // 一次只拉一个文件夹
 	        var apng=window.iSparta.apng;
 	        this.length=0;
@@ -542,7 +560,8 @@
 	        }
 	        return true;
 	    },
-	    walkFile:function(path){
+
+	    walkFile: function(path) {
 	        //var apng={name:name};
 	         var apng=window.iSparta.apng;
 	        if(/.*\d+\.png$/i.test(path)){
@@ -608,7 +627,8 @@
 	            }
 	        }
 	    },
-	    walkDir:function(path){
+
+	    walkDir: function(path) {
 	        var dirList = fs.readdirSync(path);
 	        var that=this;
 	        dirList.forEach(function(item){

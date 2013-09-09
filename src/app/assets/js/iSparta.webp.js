@@ -31,6 +31,7 @@
 			savePathIndex: 0,	// 保存路径索引
 			currentPathIndex: 0 // 当前路径索引
 		},
+		
 		dirName: '',
 		fileList: {},
 		isDir: true,
