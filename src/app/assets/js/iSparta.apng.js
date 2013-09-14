@@ -9,7 +9,7 @@
 		$rate = $("#apng_select_rate"),
 		$savePath = $("#apng_select_savePath"),
 		$currentPath = $("#apng_select_currentPath"),
-		$btnCurrentPath = $("#apng_btn_currentPath"),
+		$btnCurrentPath = $("#apng_btn_currentPath"),	
 		$refresh = $("#apng_currentPath_refresh"),
 		$btnSavePath = $("#apng_btn_savePath"),
 		$hSavePath = $("#apng_savePath_hidden"),
@@ -50,11 +50,11 @@
 			$rate.val(options.rate);
 			for(var i=0; i<options.savePath.length; i++){
 				if(options.savePath[i]=="parent"){
-					var opt=new Option("上级目录",options.savePath[i]);
+					var opt = new Option("上级目录",options.savePath[i]);
 				}else if(options.savePath[i]=="self"){
-					var opt=new Option("同级目录",options.savePath[i]);
+					var opt = new Option("同级目录",options.savePath[i]);
 				}else{
-					var opt=new Option(options.savePath[i],options.savePath[i]);
+					var opt = new Option(options.savePath[i],options.savePath[i]);
 				}
 				
 				if(i==options.savePathIndex){

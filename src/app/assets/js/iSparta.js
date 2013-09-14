@@ -50,10 +50,10 @@
 				}
 				data[i].version = version;
 				data[i].type = type;
-				$.post("http://zhijie.me/iSparta/data.php", data[i], function(result){});
+				$.post("http://zhijie.me/iSparta/data.php", data[i], function(result){ });
 			}
 		},
-
+		
 		checkVersion: function() {
 			var ui = this.ui;
 			$.get("http://zhijie.me/iSparta/data.php", {versioncheck:version}, function(result) {
