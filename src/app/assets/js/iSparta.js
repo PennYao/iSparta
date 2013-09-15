@@ -27,7 +27,7 @@
 			}
 			if (_pf == "Mac68K" || _pf == "MacPPC" || _pf == "Macintosh") { 
 				return "mac"; 
-			} else if (_pf == "X11") { 
+			} else if (_pf == "X11") {
 				return "unix"; 
 			} else if (String(_pf).indexOf("Linux") > -1) { 
 				return "linux"; 
@@ -50,10 +50,10 @@
 				}
 				data[i].version = version;
 				data[i].type = type;
-				$.post("http://zhijie.me/iSparta/data.php", data[i], function(result){ });
+				$.post("http://zhijie.me/iSparta/data.php", data[i], function(result){});
 			}
 		},
-		
+				
 		checkVersion: function() {
 			var ui = this.ui;
 			$.get("http://zhijie.me/iSparta/data.php", {versioncheck:version}, function(result) {

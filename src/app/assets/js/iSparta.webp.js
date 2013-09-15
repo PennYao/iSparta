@@ -34,10 +34,16 @@
 			savePathIndex: 0,				// 保存路径索引
 			currentPathIndex: 0				// 当前路径索引
 		},
-		
 		dirName: '',		// 文件夹名
 		fileList: {},		// 文件列表
+		files: {},			// 临时文件对象
+		finalSavePath: '',	// 历史文件保存路径
+		cwebp: '',			// webp lib路径
+		param: '',			// 压缩参数
+		o_dirSize: 0,		// 初始文件夹大小
+		c_dirSize: 0,		// 压缩后文件夹大小
 		isDir: true,		// 是否目录
+
 
 		init: function() {
 
@@ -53,7 +59,7 @@
 			for(var i=0; i<options.savePath.length; i++){
 				if(options.savePath[i] == "parent"){
 					opt = new Option("上级目录", options.savePath[i]);
-				}else if(options.savePath[i]=="self"){
+				}else if(options.savePath[i] =="self"){
 					opt = new Option("同级目录", options.savePath[i]);
 				}else{
 					opt = new Option(options.savePath[i], options.savePath[i]);
@@ -71,10 +77,7 @@
 					$(opt).attr("selected", "selected");
 					$boxPreview.empty();
 					this.ui.fillImgDirList(options.currentPath[i] + path.sep);
-					window.iSparta.webp.dirName = options.currentPath[i] + path.sep ;
-
-					/**********************/
-					console.log(this.dirName);
+					window.iSparta.webp.dirName = options.currentPath[i] + path.sep;
 				}
 				$currentPath[0].options.add(opt);
 			}
@@ -82,7 +85,9 @@
 			this.ui.init();
 		},
 
-		exec: function(dir) {
+		convert: function(dir) {
+
+			this.c_dirSize = 0;
 
 			var sysInfo;
 			if(window.iSparta.getOsInfo() == 'win32') {
@@ -93,69 +98,121 @@
 				sysInfo = '';	// for other os
 			}
 
-			var cwebp = process.cwd() + sysInfo;
+			this.cwebp = process.cwd() + sysInfo;
+			this.currentPath = this.options.currentPath[this.options.currentPathIndex];
+
 			var dConfig = ' -m 6 ';
 			var param = dConfig + this.options.config + ' -q ' + this.options.ratio + ' ';
-			var currentPath = this.options.currentPath[this.options.currentPathIndex];
 			var savePath = this.options.savePath[this.options.savePathIndex];
 			var config = this.options.config === '' ? '-lossy' : '-lossless';
-			var dirName = currentPath.substring(currentPath.lastIndexOf(path.sep)+1) + '-webp' + config + this.options.ratio;
+			var dirName = this.currentPath.substring(this.currentPath.lastIndexOf(path.sep)+1) + '-webp' + config + this.options.ratio;
 
-			var finalSavePath;
 			if(savePath == 'parent') {
-				finalSavePath = currentPath.substring(0, currentPath.lastIndexOf(path.sep)) + path.sep + dirName + path.sep;
+				this.finalSavePath = this.currentPath.substring(0, this.currentPath.lastIndexOf(path.sep)) + path.sep + dirName + path.sep;
 			}else if(savePath == 'self') {
-				finalSavePath = currentPath + path.sep + dirName + path.sep;
+				this.finalSavePath = this.currentPath + path.sep + dirName + path.sep;
 			}else {
-				finalSavePath = savePath + path.sep + dirName + path.sep;
-			}
-			/**********************/
-			console.log(finalSavePath);
-
-			if(!fs.existsSync(finalSavePath)) {
-				fs.mkdirSync(finalSavePath)
+				this.finalSavePath = savePath + path.sep + dirName + path.sep;
 			}
 
 			/**********************/
-			console.log('Dir:'+window.iSparta.webp.isDir);
+			console.log('finalSavePath::'+ this.finalSavePath);
+
+			try {
+				if(!fs.existsSync(this.finalSavePath)) {
+					fs.mkdirSync(this.finalSavePath)
+				}
+			} catch (err) {
+				console.log('err:' + err);
+			}
+
+			// directory
 			if(window.iSparta.webp.isDir) {
 				fs.readdir(dir, function(err, files) {
 					if (err) {
 						window.iSparta.ui.showTips("读取文件夹出错！");
 						$boxPreview.append('<div class="empty"><span class="drag_area">+</span></div>')
-					}else {
-						for (var i = 0; i < files.length; ++i) {
-							var progress = (i+1)/files.length;
-
-							if(files[i].indexOf('.jpg') != -1 || files[i].indexOf('.png') != -1){
-								
-								/**********************/
-								console.log('"'+cwebp+'" '+param+'"'+currentPath + path.sep +files[i]+'"'+ ' -o ' + '"' +
-								 finalSavePath + files[i].substring(0, files[i].lastIndexOf('.')) + '.webp"');
-
-								exec('"'+cwebp+'" '+param+'"'+currentPath + path.sep +files[i]+'"'+ ' -o ' + '"' +
-								 finalSavePath + files[i].substring(0, files[i].lastIndexOf('.')) + '.webp"');
-							}
+					}
+					else {
+						window.iSparta.webp.files = files;
+						if (files.length > 0) {
+							window.iSparta.webp.control(0);
 						}
-						window.iSparta.ui.showTips("转换完成！");
 					}
 				});
-			} else {
-				var files = window.iSparta.webp.fileList;
-				for(var i=0; i<files.length; i++){
-					if(files[i].path.indexOf('.jpg') != -1 || files[i].path.indexOf('.png') != -1){
+			} 
+			// files
+			else {
+				window.iSparta.webp.files = window.iSparta.webp.fileList;
 
-						/**********************/
-						console.log('"'+cwebp+'"'+param+'"'+currentPath + path.sep +files[i].name+'"'+ ' -o ' + '"' +
-						 finalSavePath + files[i].name.substring(0, files[i].name.lastIndexOf('.')) + '.webp"');
-
-						exec('"'+cwebp+'" '+param+'"'+currentPath + path.sep +files[i].name+'"'+ ' -o ' + '"' +
-						 finalSavePath + files[i].name.substring(0, files[i].name.lastIndexOf('.')) + '.webp"');
-					}
+				if (window.iSparta.webp.files.length > 0) {
+					window.iSparta.webp.control(0);
 				}
-				window.iSparta.ui.showTips("转换完成！");
 			}
+		},
+
+
+		control: function(i) {
+
+			if (i < this.files.length) {
+				var progress = (i+1)/this.files.length;
+				window.iSparta.ui.showProgress(progress, "正在处理第"+(i+1)+"张(共"+this.files.length+"张)图片",function(){});
+				window.iSparta.webp._exec(i);
+			}
+			else {
+				var Allinfo = [];
+				var info = {};
+				info.beforesize = this.o_dirSize;
+				info.aftersize = this.c_dirSize;
+				Allinfo.push(info);
+				window.iSparta.postData(Allinfo, "webp");
+				
+				console.log('getOriginDirSize:'+this.o_dirSize);
+				console.log('getCompressedDirSize:'+this.c_dirSize);
+
+				window.iSparta.ui.hideProgress();
+			}
+			
+		},
+
+		_exec: function(i) {
+
+			if (window.iSparta.webp.isDir) {
+				if(this.files[i].indexOf('.jpg') != -1 || this.files[i].indexOf('.png') != -1){
+
+					/*****************************/
+					console.log('"'+this.cwebp+'" '+this.param+'"'+this.currentPath+path.sep+this.files[i]+'"'+ ' -o ' + '"' +
+						this.finalSavePath + this.files[i].substring(0, this.files[i].lastIndexOf('.')) + '.webp"');
+
+					exec('"'+this.cwebp+'" '+this.param+'"'+this.currentPath+path.sep+this.files[i]+'"'+ ' -o ' + '"' +
+						this.finalSavePath + this.files[i].substring(0, this.files[i].lastIndexOf('.')) + '.webp"', {timeout: 5000}, function() {
+							window.iSparta.webp.c_dirSize += fs.statSync(
+								window.iSparta.webp.finalSavePath + window.iSparta.webp.files[i].substring(0, window.iSparta.webp.files[i].lastIndexOf('.')) + '.webp').size;
+							window.iSparta.webp.control(i+1);
+						});
+				} else {
+					window.iSparta.webp.control(i+1);
+				}
+			} else {
+				if(this.files[i].path.indexOf('.jpg') != -1 || this.files[i].path.indexOf('.png') != -1){
+
+					/*****************************/
+					console.log('"'+this.cwebp+'" '+this.param+'"'+this.currentPath+path.sep+this.files[i].name+'"'+ ' -o ' + '"' +
+						this.finalSavePath + this.files[i].name.substring(0, this.files[i].name.lastIndexOf('.')) + '.webp"');
+
+					exec('"'+this.cwebp+'" '+this.param+'"'+this.currentPath+path.sep+this.files[i].name+'"'+ ' -o ' + '"' +
+						this.finalSavePath + this.files[i].name.substring(0, this.files[i].name.lastIndexOf('.')) + '.webp"', {timeout: 5000}, function() {
+							window.iSparta.webp.c_dirSize += fs.statSync(
+								window.iSparta.webp.finalSavePath + window.iSparta.webp.files[i].name.substring(0, window.iSparta.webp.files[i].name.lastIndexOf('.')) + '.webp').size;
+							window.iSparta.webp.control(i+1);
+						});
+				} else {
+					window.iSparta.webp.control(i+1);
+				}
+			}
+
 		}
+
 	},
 
 	window.iSparta.webp.ui = {
@@ -200,9 +257,9 @@
 
 			$btnCov.click(function() {
 				if($boxPreview.is(':empty')) {
-					window.iSparta.ui.showTips();
+					window.iSparta.ui.showTips('该文件夹无 JPG 或 PNG 格式的图片');
 				}else {
-					window.iSparta.webp.exec(window.iSparta.webp.dirName);	
+					window.iSparta.webp.convert(window.iSparta.webp.dirName);	
 				}
 			})
 		},
@@ -262,15 +319,13 @@
 
 					$boxPreview.empty();
 					ui.fillImgDirList(pathstr + path.sep);
-					window.iSparta.webp.dirName = pathstr + path.sep;
 				}
 				// 拖曳文件
 				else {
-
 					window.iSparta.webp.isDir = false;
 					window.iSparta.webp.fileList = fileList;
 
-					var pathstr = fileList[0].path.substring(0, fileList[0].path.lastIndexOf('\\'));
+					var pathstr = fileList[0].path.substring(0, fileList[0].path.lastIndexOf(path.sep));
 					var opt = new Option(pathstr, pathstr);
 			        $(opt).attr("selected", "selected");
 					$currentPath[0].insertBefore(opt, $currentPath[0].options[0]);
@@ -278,9 +333,8 @@
 
 					$boxPreview.empty();
 					ui.fillImgList(fileList);
-					window.iSparta.webp.dirName = pathstr + path.sep;
 				}
-
+				window.iSparta.webp.dirName = pathstr + path.sep;
 				return false;
 			}
 		},
@@ -324,6 +378,7 @@
 					$boxPreview.empty().append('<div class="empty"><span class="drag_area">+</span></div>')
 				}else {
 					for (var i = 0; i < files.length; ++i) {
+						manager.getOriginDirSize(path + files[i]);
 						manager.readPics(path + files[i]);
 					}
 				}
@@ -334,6 +389,7 @@
 			var manager = window.iSparta.webp.fileManager;
 
 			for(var i=0; i<fileList.length; i++){
+				manager.getOriginDirSize(fileList[i].path);
 				manager.readPics(fileList[i].path);
 			}
 		}
@@ -386,7 +442,7 @@
 
 			if(currentPath instanceof Object){
 				for(var i=0; i<theCurrentPath.length; i++){
-					if(currentPath[0] == theCurrentPath[i]){
+					if(currentPath == theCurrentPath[i]){
 						break;
 					}
 				}
@@ -401,9 +457,8 @@
 					webp.options.currentPath.unshift(currentPath[0].path);
 					var len = webp.options.currentPath.length;
 					webp.options.currentPathIndex = 0;
-					var otherFiles = [];
-					window.iSparta.localData.setJSON("webp",webp.options);
-				}
+					window.iSparta.localData.setJSON("webp", webp.options);
+				}	
 			}else{
 				for(var i=0; i<theCurrentPath.length; i++){
 					if(currentPath == theCurrentPath[i]){
@@ -420,7 +475,7 @@
 					}
 					webp.options.currentPath.unshift(currentPath);
 					var len = webp.options.currentPath.length;
-					webp.options.currentPathIndex = len-i+1;
+					webp.options.currentPathIndex = len-i;
 					
 					window.iSparta.localData.setJSON("webp", webp.options);
 				}
@@ -434,7 +489,19 @@
 			if(files.indexOf('.jpg') != -1 || files.indexOf('.png') != -1){
 				$boxPreview.append('<img class="thumbnail" src="'+files+'" alt="" />');
 			}
+		},
+
+		getOriginDirSize: function(path) {
+
+			window.iSparta.webp.o_dirSize = 0;
+
+			if(path.indexOf('.jpg') != -1 || path.indexOf('.png') != -1){
+				fs.stat(path, function(err, stats) {
+					window.iSparta.webp.o_dirSize += stats.size;
+				})
+			}
 		}
+
 	}
 
 })(jQuery);

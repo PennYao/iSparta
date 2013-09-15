@@ -152,7 +152,7 @@
 		},
 
 		exec: function(id) {
-   			var loop=this.options.loop;
+			var loop=this.options.loop;
 			var rate=this.options.rate;
 			var savePath=this.options.savePath[this.options.savePathIndex];
 			var files=this.fileList[0].files;
@@ -563,7 +563,7 @@
 
 	    walkFile: function(path) {
 	        //var apng={name:name};
-	         var apng=window.iSparta.apng;
+	         var apng = window.iSparta.apng;
 	        if(/.*\d+\.png$/i.test(path)){
 	            //apng.frames.push(path);
 	            var url=path;
