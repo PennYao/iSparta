@@ -1,5 +1,7 @@
+setup.iss
 src/icudt.dll
 src/iSparta.exe
+src/node_modules
 src/iSparta.ico
 src/iSparta.png
 src/nw.pak
