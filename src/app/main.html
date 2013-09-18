@@ -134,7 +134,6 @@
 								<label>输出目录</label>
 								<select class="folder_select" id="webp_select_savePath"></select>
 								<button id="webp_btn_savePath">选择目录</button>
-								<button id="webp_btn_openSavePath">打开目录</button>
 								<input class="hide" type="file" id="webp_savePath_hidden" nwdirectory/>
 							</div>
 				          <div class="func">
@@ -154,7 +153,6 @@
 							<select class="folder_select" id="webp_select_currentPath"></select>
 							<input class="hide" type="file" id="webp_path_hidden" nwdirectory/>
 							<button id="webp_btn_currentPath">选择目录</button>
-							<button id="webp_btn_openPath">打开本目录</button>
 							<button id="webp_currentPath_refresh">刷新</button>
 						</div>
 					</div>
@@ -189,11 +187,11 @@
       <div class="pop_wrapper">
         <div class="tips_cont">
         	<div class="txt">出错了，请重试！</div>
-        	<div class="func"><button data-trigger="close">确定</button></div>
+        	<div class="func"><button data-trigger="yes">确定</button><button data-trigger="close">取消</button></div>
+        	
       	</div>
       </div>
     </div>
-
 </div>
 <script src="assets/js/libs/jquery-2.0.3.min.js"></script>
 <script src="assets/js/libs/doT.js"></script>

@@ -11,6 +11,16 @@
 			var ui = window.iSparta.ui;
 			ui.init();
 			this.checkVersion();
+			var openedNum=this.localData.get("openedNum");
+				
+			if(!openedNum){
+				this.localData.remove("apng");
+				this.localData.remove("webp");
+				this.localData.set("openedNum",1);
+			}else{
+				openedNum=parseInt(openedNum)+1;
+				this.localData.set("openedNum",openedNum);
+			}
 		},
 
 		getOsInfo: function() {
@@ -57,7 +67,6 @@
 		checkVersion: function() {
 			var ui = this.ui;
 			$.get("http://zhijie.me/iSparta/data.php", {versioncheck:version}, function(result) {
-				console.log(result)
 				if(result=="new"){
 					
 				}else{
@@ -190,7 +199,9 @@
 	window.iSparta.localData = {
 
 		storage: window.localStorage,
-
+		remove:function(key){
+			this.storage.removeItem(key);
+		},
 		get: function(key) {
 			return this.storage.getItem(key);
 		},
@@ -201,7 +212,16 @@
 
 		getJSON: function(key) {
 			var val = this.storage.getItem(key);
-			val = JSON.parse(val);
+			
+			try{
+				val = JSON.parse(val);
+			}catch(e){
+				this.remove(key);
+				return {};
+			}
+			
+			
+			
 			return val;
 		},
 

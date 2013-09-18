@@ -39,6 +39,7 @@
 			localData=window.iSparta.localData;
 			var options=localData.getJSON("apng");
 			$.extend(this.options,options);
+
 			process.on('uncaughtException', function (err) {
 				console.log('Caught exception: ' + err);
 			});
@@ -267,6 +268,7 @@
 				$hSavePath.click();
 			});
 			$hSavePath.on("change",function(e){
+
 				var val=$(this).val();
 				var opt=new Option(val,val);
 				$(opt).attr("selected","selected");
@@ -311,6 +313,7 @@
 			};
 			$dragArea.click(function(e) {
 				$hPath.click();
+				return false;
 			});
 			$hPath.on("change",function(e){
 				var fileList = e.delegateTarget.files; //获取文件对象
