@@ -1,28 +1,25 @@
 (function ($) {
-
 	var exec = require('child_process').exec,
 		os = require('os'),
-		fs = require('fs'),
+		fs = require('fs-extra'),
 		gui = require('nw.gui');
-
-	var $loop = $("#apng_select_loop"),
-		$rate = $("#apng_select_rate"),
-		$savePath = $("#apng_select_savePath"),
-		$currentPath = $("#apng_select_currentPath"),
-		$btnCurrentPath = $("#apng_btn_currentPath"),	
-		$refresh = $("#apng_currentPath_refresh"),
-		$btnSavePath = $("#apng_btn_savePath"),
-		$hSavePath = $("#apng_savePath_hidden"),
-		$hPath = $("#apng_path_hidden"),
-		$btnCov = $("#apng_btn_cov"),
-		$dragArea = $("#pngToApng .drag_area"),
-		$boxPreview = $("#pngToApng .box_preview"),
+	var $loop=$("#apng_select_loop"),
+		$rate=$("#apng_select_rate"),
+		$savePath=$("#apng_select_savePath"),
+		$currentPath=$("#apng_select_currentPath"),
+		$btnCurrentPath=$("#apng_btn_currentPath"),
+		$refresh=$("#apng_currentPath_refresh"),
+		$btnSavePath=$("#apng_btn_savePath"),
+		$hSavePath=$("#apng_savePath_hidden"),
+		$hPath=$("#apng_path_hidden"),
+		$btnCov=$("#apng_btn_cov"),
+		$dragArea=$("#pngToApng .drag_area"),
+		$boxPreview=$("#pngToApng .box_preview"),
 		
-		$itemOpenPos = $("#pngToApng .imglist .icon-folder-open"),
+		$itemOpenPos=$("#pngToApng .imglist .icon-folder-open"),
 		tmplFileList = $('#apng_tmpl_filelist').html();
 	
-	window.iSparta.apng = {
-
+	window.iSparta.apng ={
 		options:{
 			loop:0,
 			rate:1,
@@ -33,37 +30,37 @@
 			savePathIndex:0,
 			currentPathIndex:0
 		},
-
 		fileList:[],
 		nums:0,
 		index:0,
 		isClose:false,
 		mixIndex:0,
-
-		init: function() {
-			localData = window.iSparta.localData;
-			var options = localData.getJSON("apng");
+		init:function(){
+			localData=window.iSparta.localData;
+			var options=localData.getJSON("apng");
 			$.extend(this.options,options);
-			
-			options = this.options;
+			process.on('uncaughtException', function (err) {
+				console.log('Caught exception: ' + err);
+			});
+			options=this.options;
 			$loop.val(options.loop);
 			$rate.val(options.rate);
-			for(var i=0; i<options.savePath.length; i++){
+			for(var i=0;i<options.savePath.length;i++){
 				if(options.savePath[i]=="parent"){
-					var opt = new Option("上级目录",options.savePath[i]);
+					var opt=new Option("上级目录",options.savePath[i]);
 				}else if(options.savePath[i]=="self"){
-					var opt = new Option("同级目录",options.savePath[i]);
+					var opt=new Option("同级目录",options.savePath[i]);
 				}else{
-					var opt = new Option(options.savePath[i],options.savePath[i]);
+					var opt=new Option(options.savePath[i],options.savePath[i]);
 				}
 				
 				if(i==options.savePathIndex){
 					$(opt).attr("selected","selected");
 				}
 				$savePath[0].options.add(opt);
+		        
 			}
-
-			for(var i=0; i<options.currentPath.length; i++){
+			for(var i=0;i<options.currentPath.length;i++){
 				var opt=new Option(options.currentPath[i],options.currentPath[i]);
 				if(i==options.currentPathIndex){
 					$(opt).attr("selected","selected");
@@ -82,6 +79,7 @@
 					}
 		
 					if(!this.ui.fillImglist(fileList)){
+
 						//window.iSparta.ui.showTips("目录读取失败！请确认文件目录是否存在");
 					}
 				}
@@ -90,8 +88,8 @@
 			}
 			this.ui.init();
 		},
+		switch:function(id){
 
-		switch: function(id) {
 			if(!this.fileList[0]){
 				window.iSparta.ui.showTips("未选择任何图片！");
 				return;
@@ -109,6 +107,8 @@
 			}else{
 				
 				if(!id){
+					
+            					
 					id=0;
 					
 				}
@@ -128,11 +128,11 @@
 					this.index++;
 					this.exec(id);
 				}else{
-					this.nums=0;
-					this.index=0;
+					
 					var filesInfo=window.iSparta.apng.fileList[0].files;
 					
 					var Allinfo=[];
+					var postData=[];
 					for(var i=0;i<filesInfo.length;i++){
 						if(filesInfo[i].selected==true){
 							var info={};
@@ -144,21 +144,31 @@
 							Allinfo.push(info);
 						}
 					}
-					window.iSparta.postData(Allinfo,"apng");
+					for(var i=0;i<this.index;i++){
+						postData[i]=Allinfo[i];
+					}
+					console.log(postData)
+					window.iSparta.postData(postData,"apng");
+					this.nums=0;
+					this.index=0;
 					this.isClose=false;
 					window.iSparta.ui.hideProgress();
+					window.iSparta.ui.hideLoading();
 				}
 			}
-		},
+			
 
-		exec: function(id) {
-			var loop=this.options.loop;
+		},
+		exec:function(id){
+   			var loop=this.options.loop;
 			var rate=this.options.rate;
 			var savePath=this.options.savePath[this.options.savePathIndex];
 			var files=this.fileList[0].files;
 			var url=files[id].url[0];
+			var urls=files[id].url;
             var name=files[id].name;
             var path=savePath+"\\"+name+".png";
+
             if(savePath=="parent"){
             	var path=files[id].pppath+"\\"+name+".png";
             }else if(savePath=="self"){
@@ -166,32 +176,83 @@
             }
             
             var apngasm = process.cwd() + '\\app\\libs\\apng\\'+iSparta.getOsInfo()+'\\apngasm.exe';
+            var pngquant = process.cwd() + '\\app\\libs\\apng\\'+iSparta.getOsInfo()+'\\pngquant.exe';
             var apngopt = process.cwd() + '\\app\\libs\\apng\\'+iSparta.getOsInfo()+'\\apngopt.exe';
-           
-			exec('"'+apngasm+'" "'+path+'" "'+url+'" '+rate+" 10"+" /l"+loop, {timeout: 10000}, function(e){
-                exec('"'+apngopt+'" "'+path+'" "'+path, {timeout: 10000}, function(e){
-                	var size = fs.statSync(path).size;
-                	files[id].apngsize = size;
-                    window.iSparta.apng.switch(id+1);
-                });
-            });
+            var tempdir=os.tmpdir()+'\\iSparta\\';
+           	var tempindex=0;
+           	var quantindex=0;
+           	try{
+	           	dirHandle();
+	           }
+			catch(err){
+				dirHandle();
+			}
+			function dirHandle(){
+				fs.removeSync(tempdir);
+	            fs.mkdirsSync(tempdir);
+				for(var i=0;i<urls.length;i++){
+					fs.copy(urls[i], tempdir+'apng'+(i+1)+'.png', function(err){
+					  tempindex++;
+					  
+					 if(tempindex==urls.length){
+					 	apngasmExec();
+					 	//pngquantExec(1);
+					 }
+					});
+				}
+			};
+			function pngquantExec(tempindex){
+ 				var quanturl=tempdir+'apng'+(tempindex)+'.png';
+				var quanturl2=tempdir+'apng_new'+(tempindex)+'.png';
+				var quanttxt='"'+pngquant+'"  150  --ext _new'+tempindex+'.png "'+quanturl+'"';
+				exec(quanttxt, {timeout: 1000000}, function(e){
+					quantindex++;
+					pngquantExec(tempindex+1);
+					if(quantindex==urls.length){
+						for(var i=1;i<=urls.length;i++){
+							
+							fs.renameSync(tempdir+'apng'+(i)+'_new'+i+'.png', tempdir+'apng_new'+i+'.png');
+						}
+						url=tempdir+'apng_new1.png';
+			  			apngasmExec();
+			  		}
+				});				
+			}
+			function apngasmExec(){
+				//var url=tempdir+'apng_new1.png';
+				rate=rate*100;
+				
+				exec('"'+apngasm+'" "'+path+'" "'+url+'" '+rate+" 100"+" /l"+loop, {timeout: 10000}, function(e){
+	                exec('"'+apngopt+'" "'+path+'" "'+path, {timeout: 10000}, function(e){
+	                	var size = fs.statSync(path).size;
+	                	files[id].apngsize = size;
+	                    window.iSparta.apng.switch(id+1);
+	                });
+	            });
+			}
+			
+
+           	//fs.linkSync(url, os.tmpdir()+"\\iSparta\\"+name+".png")
+			// exec('"'+apngasm+'" "'+path+'" "'+url+'" '+rate+" 10"+" /l"+loop, {timeout: 10000}, function(e){
+   //              exec('"'+apngopt+'" "'+path+'" "'+path, {timeout: 10000}, function(e){
+   //              	var size = fs.statSync(path).size;
+   //              	files[id].apngsize = size;
+   //                  window.iSparta.apng.switch(id+1);
+   //              });
+   //          });
 		}
 	};
-
 	// 界面操作
-	window.iSparta.apng.ui = {
-
-		dataHelper: {},
-
-		init: function() {
-			this.dataHelper = window.iSparta.apng.dataHelper;
+	window.iSparta.apng.ui={
+		dataHelper:{},
+		init:function(){
+			this.dataHelper=window.iSparta.apng.dataHelper;
 			this.topbar();
 			this.preview();
 			this.items();
 			this.status();
 		},
-
-		topbar: function() {
+		topbar:function(){
 			var ui=this;
 			$loop.on("change",function(){
 				ui.dataHelper.changeLoop($(this).val());
@@ -217,8 +278,7 @@
 				window.iSparta.apng.switch();
 			});
 		},
-
-		preview: function() {
+		preview:function(){
 			var ui=this;
 			$boxPreview[0].ondragover = function() { 
 				$dragArea.addClass("hover");
@@ -254,30 +314,30 @@
 			});
 			$hPath.on("change",function(e){
 				var fileList = e.delegateTarget.files; //获取文件对象
+				
+				
 				var val=$(this).val();
 				if(ui.fillImglist(fileList)){
 					var opt=new Option(val,val);
 					$(opt).attr("selected","selected");
 					$currentPath[0].insertBefore(opt,$currentPath[0].options[0]);
-				
-				
-		        
 		        	ui.dataHelper.changeCurrentPath(val);
 		        }
 		        
 				return false;
 			});
 		},
-
-		fillImglist: function(fileList) {
+		fillImglist:function(fileList){
 			if(fileList.length == 0){
 	            return false;
 	        }
 	        window.iSparta.ui.showLoading();
+
 	        if(!window.iSparta.apng.fileManager.walk(fileList,function(){})){
 
 	        	window.iSparta.ui.hideLoading();
-	        	window.iSparta.ui.showTips("目录读取失败！请确认文件目录是否存在！");
+	        	window.iSparta.ui.showTips("目录读取失败！请确认文件目录是否存在！<br/>并且不能选择盘符！");
+	        	
 	        	return false;
 
 	        };
@@ -295,9 +355,9 @@
 	        	$boxPreview.html(html);
 	        	return true;
 	        }
+	        
 		},
-
-		items: function() {
+		items:function(){
 			var timer=null;
 			var ui=this;
 			var urlIndex=0;
@@ -320,13 +380,14 @@
 		        var id=li.attr("data-id");
 				
 				var that=$(this);
+				
 				timer=setInterval(function(){
 					if(urlIndex>fileList[pid].files[id].url.length-1){
 						urlIndex=0;
 					}
 					that.find("img").attr("src",fileList[pid].files[id].url[urlIndex]);
 					urlIndex++;
-				},window.iSparta.apng.options.rate*100);
+				},window.iSparta.apng.options.rate*1000);
 		    });
 		    $boxPreview.on("mouseout",".imglist .thumb",function(){
 		    	var fileList=window.iSparta.apng.fileList;
@@ -349,8 +410,7 @@
 		        fileList[pid].files[id].name=name;
 		    });
 		},
-
-		status: function() {
+		status:function(){
 			var ui=this;
 			$currentPath.on("change",function(){
 				var options=window.iSparta.apng.options;
@@ -400,23 +460,19 @@
 
 		}
 	};
-
 	// 数据控制
-	window.iSparta.apng.dataHelper = {
-
-		changeLoop: function(loop) {
+	window.iSparta.apng.dataHelper={
+		changeLoop:function(loop){
 			var apng=window.iSparta.apng;
 			apng.options.loop=loop;
 			window.iSparta.localData.setJSON("apng",apng.options);
 		},
-
-		changeRate: function(rate) {
+		changeRate:function(rate){
 			var apng=window.iSparta.apng;
 			apng.options.rate=rate;
 			window.iSparta.localData.setJSON("apng",apng.options);
 		},
-
-		changeSavaPath: function(savePath) {
+		changeSavaPath:function(savePath){
 			var apng=window.iSparta.apng;
 			var theSavePath=apng.options.savePath;
 			for(var i=0;i<theSavePath.length;i++){
@@ -438,9 +494,9 @@
 				apng.options.savePathIndex=0;
 				window.iSparta.localData.setJSON("apng",apng.options);
 			}
+			
 		},
-
-		changeCurrentPath: function(currentPath,theOtherFiles) {
+		changeCurrentPath:function(currentPath,theOtherFiles){
 			var apng=window.iSparta.apng;
 			var theCurrentPath=apng.options.currentPath;
 			
@@ -494,34 +550,41 @@
 			
 		}
 	};
-
 	// 文件目录递归与操作
-	window.iSparta.apng.fileManager = {
-
+	window.iSparta.apng.fileManager={
 	    length:-1,
 	    nowLen:0,
 	    names:[],
 	    allsize:0,
-
-	    walk: function(fileList,callback) {
+	    maxDepth:3,
+	    nowDepth:0,
+	    Apng:{},
+	    walk:function(fileList,callback){
 	        // 一次只拉一个文件夹
-	        var apng=window.iSparta.apng;
+	       	var Apng=this.Apng;
 	        this.length=0;
-	        apng.fileList=[];
+	        Apng.fileList=[];
 	        this.names=[];
+	        if(fileList[0].path.length==3){
+	        	return false;
+	        }
 	        for(var i=0;i<fileList.length;i++){
+	        	
 	            var path=fileList[i].path;
-	            var dirs={};
+	            
 	           	if(!fs.existsSync(path)){
 	           		// console.log(fs.existsSync(path))
 	           		return false;
 	           	}
+	           	this.nowDepth=-1;
 	            if(fs.statSync(path).isDirectory()){
+	            	this.nowDepth++;
+	            	var dirs={};
 	                var url=path.substring(0,path.lastIndexOf("\\"));
 	                dirs.url=url;
 	                dirs.length=this.length+i;
 	                dirs.files=[];
-	                apng.fileList.push(dirs);
+	                Apng.fileList.push(dirs);
 	                this.walkDir(path);
 	                //fileWalk.length++;
 	            }else if(fs.statSync(path).isFile()){
@@ -530,8 +593,8 @@
 	                //if(fileWalk.length==0||url!=fileWalk.allFileList[fileWalk.length].url){
 	                    dirs.url=url;
 	                    dirs.files=[];
-	                    if(this.nowLen!=this.length||(this.length==0&&(!apng.fileList[this.length]||url!=apng.fileList[this.length].url))){
-	                        apng.fileList.push(dirs);
+	                    if(this.nowLen!=this.length||(this.length==0&&(!Apng.fileList[this.length]||url!=Apng.fileList[this.length].url))){
+	                        Apng.fileList.push(dirs);
 	                    }
 	                    if(this.nowLen!=this.length){
 	                        this.nowLen=this.length
@@ -545,31 +608,32 @@
 	            
 	            
 	        }
-	        var len=apng.fileList.length;
-	        var listTemp=apng.fileList;
+	        this.nowDepth=-1;
+	        var len=Apng.fileList.length;
+	        var listTemp=Apng.fileList;
 	        for(var i=len-1;i>=0;i--){
-	            var len2=apng.fileList.length;
-	            if(apng.fileList[i].files.length==0){
+	            var len2=Apng.fileList.length;
+	            if(Apng.fileList[i].files.length==0){
 	                
-	                apng.fileList.splice(len2-1,1);
+	                Apng.fileList.splice(len2-1,1);
 	               
 	            }
 	        }
+	        window.iSparta.apng.fileList=Apng.fileList;
 	        if((typeof callback)=='function'){
 	        	callback();
 	        }
 	        return true;
 	    },
-
-	    walkFile: function(path) {
+	    walkFile:function(path){
 	        //var apng={name:name};
-	         var apng = window.iSparta.apng;
+	         var Apng=this.Apng;
 	        if(/.*\d+\.png$/i.test(path)){
 	            //apng.frames.push(path);
 	            var url=path;
 	            var repeatIndex=-1;
 	           
-	            var allfile=apng.fileList[this.length].files;
+	            var allfile=Apng.fileList[this.length].files;
 	            var stat=fs.statSync(path);
 	            var size=stat.size;
 	            path2=path;
@@ -627,17 +691,32 @@
 	            }
 	        }
 	    },
-
-	    walkDir: function(path) {
+	    walkDir:function(path){
 	        var dirList = fs.readdirSync(path);
 	        var that=this;
+			that.nowDepth++;
 	        dirList.forEach(function(item){
+	        	
 	            if(fs.statSync(path + '\\' + item).isDirectory()){ 
-	                that.walkDir(path + '\\' + item);
+	            	
+	        		if(that.nowDepth<that.maxDepth){
+	        			
+	        			that.walkDir(path + '\\' + item);
+
+	        		}
+	        		if(that.nowDepth>=that.maxDepth){
+	        			
+	        		
+	        		}
+	        		
+					
+	               
 	            }else if(fs.statSync(path + '\\' + item).isFile()){
 	                that.walkFile(path + '\\' + item);
 	            }
 	        });
+	        that.nowDepth--;
+	        
 	    }
 	}
 
