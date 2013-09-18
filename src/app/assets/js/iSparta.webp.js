@@ -2,15 +2,17 @@
 
 	var fs = require('fs'),
 		path = require('path'),
+		gui = require('nw.gui'),
 		exec = require('child_process').exec;
 
-		// setting
+		// topbar
 	var $config = $("#webp_select_config"),
 		$ratio = $("#webp_select_ratio"),
 		$savePath = $("#webp_select_savePath"),
 		$btnSavePath = $("#webp_btn_savePath"),
 		$hSavePath = $("#webp_savePath_hidden"),
 		$btnCov = $("#webp_btn_cov"),
+		$btnOpenSavePath = $("#webp_btn_openSavePath"),
 
 		// preview
 		$boxPreview = $("#pngToWebp .box_preview"),
@@ -20,6 +22,7 @@
 		$currentPath = $("#webp_select_currentPath"),
 		$btnCurrentPath = $("#webp_btn_currentPath"),
 		$hPath = $("#webp_path_hidden"),
+		$btnOpenPath = $("#webp_btn_openPath"),
 		$refresh = $("#webp_currentPath_refresh");
 
 
@@ -212,7 +215,6 @@
 			}
 
 		}
-
 	},
 
 	window.iSparta.webp.ui = {
@@ -241,11 +243,11 @@
 
 			$savePath.on("change", function() {
 				ui.dataHelper.changeSavaPath($(this).val());
-			});
+			})
 
 			$btnSavePath.on("click", function() {
 				$hSavePath.click();
-			});
+			})
 
 			$hSavePath.on("change", function(e) {
 				var val = $(this).val();
@@ -253,7 +255,7 @@
 				$(opt).attr("selected", "selected");
 				$savePath[0].insertBefore(opt, $savePath[0].options[0])
 				ui.dataHelper.changeSavaPath(val);
-			});
+			})
 
 			$btnCov.click(function() {
 				if($boxPreview.is(':empty')) {
@@ -262,6 +264,11 @@
 					window.iSparta.webp.convert(window.iSparta.webp.dirName);	
 				}
 			})
+
+			$btnOpenSavePath.click(function() {
+		        gui.Shell.showItemInFolder($savePath.val());
+		    })
+
 		},
 
 		preview: function() {
@@ -269,7 +276,7 @@
 			var ui = this;
 
 			$("body").on("click", ".drag_area", function(){
-			  $hPath.click();
+				$hPath.click();
 			});
 
 			$hPath.on("change", function(e) {
@@ -367,6 +374,11 @@
 				window.iSparta.webp.dirName = pathstr + path.sep;
 				return false;
 			});
+
+			$btnOpenPath.click(function() {
+		        gui.Shell.showItemInFolder($currentPath.val());
+		    });
+
 		},
 
 		fillImgDirList: function(path) {
@@ -483,6 +495,7 @@
 		}
 	},
 
+
 	window.iSparta.webp.fileManager = {
 
 		readPics: function(files) {
@@ -492,16 +505,53 @@
 		},
 
 		getOriginDirSize: function(path) {
-
 			window.iSparta.webp.o_dirSize = 0;
-
 			if(path.indexOf('.jpg') != -1 || path.indexOf('.png') != -1){
 				fs.stat(path, function(err, stats) {
 					window.iSparta.webp.o_dirSize += stats.size;
 				})
 			}
-		}
+		},
 
+		unique: function(arr) {
+			var ret = []
+			var hash = {}
+		 
+			console.log('before:'+arr.length);
+
+			for (var i=0; i<arr.length; i++) {
+				var key = arr[i];
+				if (hash[key] !== 1) {
+					ret.push(key);
+					hash[key] = 1;
+				}
+			}
+			console.log('after:'+ret.length);
+			delete hash;
+			return ret.length;
+		},
+
+
+		getColorCount: function(id, srcstr) {
+			var canvas = document.getElementById(id);
+			var ctx = canvas.getContext('2d');
+
+			var img = new Image();	// Create new Image object
+			img.src = srcstr;		// Set source path
+			img.onload = function() {
+				ctx.drawImage(img, 0, 0);
+				var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+				var arr = [];
+				for (var i=0; i<imgData.data.length; i+=4) {
+					var r = imgData.data[i];
+					var g = imgData.data[i+1];
+					var b = imgData.data[i+2];
+					var a = imgData.data[i+3];
+					arr.push([r,g,b,a]);
+				}
+				return unique(arr);
+			}
+		}
 	}
 
 })(jQuery);

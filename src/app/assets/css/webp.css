@@ -6,3 +6,7 @@
 	margin: 8px;
 	border: 2px solid #888;
 }
+
+select.folder_select {
+	width: 200px;
+}
