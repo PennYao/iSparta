@@ -143,8 +143,11 @@
 			$(".pop_progress .txt").html(txt);
 			$(".pop_progress").addClass("active");
 			$(".pop_progress  button[data-trigger='close']").one("click", function(){
-				if(clossCallback){
+				if(closeCallback){
+					window.iSparta.ui.showLoading();
 					closeCallback();
+					window.iSparta.ui.hideProgress();
+					
 				}
 			});
 		},
