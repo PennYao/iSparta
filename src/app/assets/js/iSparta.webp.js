@@ -93,12 +93,13 @@
 			this.c_dirSize = 0;
 
 			var sysInfo;
+			console.log(path)
 			if(window.iSparta.getOsInfo() == 'win32') {
 				sysInfo = path.sep+'app'+path.sep+ 'libs'+path.sep+'webp'+path.sep+'libwebp-0.3.1-windows-x32'+path.sep+'cwebp.exe';
 			}else if(window.iSparta.getOsInfo() == 'win64') {
 				sysInfo = path.sep+'app'+path.sep+'libs'+path.sep+'webp'+path.sep+'libwebp-0.3.1-windows-x64'+path.sep+'cwebp.exe';
 			}else {
-				sysInfo = '';	// for other os
+				sysInfo = path.sep+'app'+path.sep+ 'libs'+path.sep+'webp'+path.sep+'mac'+path.sep+'cwebp';	// for other os
 			}
 
 			this.cwebp = process.cwd() + sysInfo;
@@ -108,14 +109,15 @@
 			var param = dConfig + this.options.config + ' -q ' + this.options.ratio + ' ';
 			var savePath = this.options.savePath[this.options.savePathIndex];
 			var config = this.options.config === '' ? '-lossy' : '-lossless';
+			
 			var dirName = this.currentPath.substring(this.currentPath.lastIndexOf(path.sep)+1) + '-webp' + config + this.options.ratio;
-
+			console.log(this.currentPath)
 			if(savePath == 'parent') {
-				this.finalSavePath = this.currentPath.substring(0, this.currentPath.lastIndexOf(path.sep)) + path.sep + dirName + path.sep;
+				this.finalSavePath = this.currentPath.substring(0, this.currentPath.lastIndexOf(path.sep)) + path.sep;
 			}else if(savePath == 'self') {
-				this.finalSavePath = this.currentPath + path.sep + dirName + path.sep;
+				this.finalSavePath = this.currentPath + path.sep;
 			}else {
-				this.finalSavePath = savePath + path.sep + dirName + path.sep;
+				this.finalSavePath = savePath + path.sep;
 			}
 
 			/**********************/
@@ -189,6 +191,8 @@
 
 					exec('"'+this.cwebp+'" '+this.param+'"'+this.currentPath+path.sep+this.files[i]+'"'+ ' -o ' + '"' +
 						this.finalSavePath + this.files[i].substring(0, this.files[i].lastIndexOf('.')) + '.webp"', {timeout: 5000}, function() {
+
+							console.log(window.iSparta.webp.finalSavePath + window.iSparta.webp.files[i].substring(0, window.iSparta.webp.files[i].lastIndexOf('.')) + '.webp')
 							window.iSparta.webp.c_dirSize += fs.statSync(
 								window.iSparta.webp.finalSavePath + window.iSparta.webp.files[i].substring(0, window.iSparta.webp.files[i].lastIndexOf('.')) + '.webp').size;
 							window.iSparta.webp.control(i+1);

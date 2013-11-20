@@ -20,9 +20,10 @@
 			<ul class="tab_trigger">
 				<li class="active">PNG转APNG</li>
 				<li>PNG转WebP</li>
+				<li>图片无损压缩</li>
+				<li>PNG有损压缩</li>
 			</ul>
 			<div class="tab_content">
-
 				<div id="pngToApng" class="cont active">
 					<div class="box_setting clearfix">
 						<div class="option">
@@ -60,6 +61,27 @@
 					          </select>
 					          秒/帧
 				          </div>
+
+				          <div class="option">
+							<label>压缩比</label>
+					         <select id="apng_select_quality">
+					            <option value ="10">10%</option>
+					            <option value ="20">20%</option>
+					            <option value ="30">30%</option>
+					            <option value ="40">40%</option>
+					            <option value ="50">50%</option>
+					            <option value="60">60%</option>
+					            <option value="70">70%</option>
+					            <option value="80">80%</option>
+					            <option value="90">90%</option>
+					            <option value="100">100%</option>
+					            <option value="-1">不压缩</option>
+					         </select>
+				         </div>
+						 <!-- <div class="option">
+							<label>最后一帧延时：</label>
+					        <input type="number" id="apng_last_delay" value="0"/>秒
+				         </div>	 -->			         
 				          <div class="option">
 								<label>输出目录</label>
 								<select class="folder_select" id="apng_select_savePath"></select>
@@ -91,6 +113,8 @@
 			                </ul>
 			              {{ } }}
 			            </script> 
+			            <canvas id="canvas_apng"></canvas>
+			            <canvas id="canvas_png"></canvas>
 					</div>
 					<div class="box_status clearfix">
 						<div class="option">
@@ -99,11 +123,10 @@
 							<input class="hide" type="file" id="apng_path_hidden" nwdirectory/>
 							<button id="apng_btn_currentPath">选择目录</button>
 							<button id="apng_currentPath_refresh">刷新</button>
+							<!-- <button id="apng_clear">清空记录</button> -->
 						</div>
 					</div>
 				</div>
-
-
 				<div id="pngToWebp" class="cont">
 					<div class="box_setting clearfix">
 						<div class="option">
@@ -154,6 +177,151 @@
 							<input class="hide" type="file" id="webp_path_hidden" nwdirectory/>
 							<button id="webp_btn_currentPath">选择目录</button>
 							<button id="webp_currentPath_refresh">刷新</button>
+							
+						</div>
+					</div>
+				</div>
+				<div id="imglossless" class="cont">
+					<div class="box_setting clearfix">
+						<div class="option">
+							<label>文件名后缀</label>
+					         <select id="imglossless_select_ext">
+					            <option value ="">无后缀（同级覆盖原文件）</option>
+					            <option value ="-lossless">-lossless</option>
+					         </select>
+				         </div>
+				         <div class="option">
+								<label>输出目录</label>
+								<select class="folder_select" id="imglossless_select_savePath"></select>
+								<button id="imglossless_btn_savePath">选择目录</button>
+								<input class="hide" type="file" id="imglossless_savePath_hidden" nwdirectory/>
+							</div>
+				          <div class="func">
+				          	<button class="custom_button btn_strong" id="imglossless_btn_cov">开始转换</button>
+				          </div>
+					</div>
+					<div class="box_preview">
+						<div class="empty">
+							<span class="drag_area">+</span>
+						</div>
+						<script id="imglossless_tmpl_filelist" type="text/template">
+			              {{ for (var i = 0; i < it.all.length; i++) { }}
+			                <ul class="clearfix imglist">
+			                    {{ for (var j = 0; j < it.all[i].files.length; j++) { }}
+			                    <li data-pid="{{=i}}" data-id="{{=j}}" class="checked">
+			                    	<div class="thumb">
+			                    		<img src="{{=it.all[i].files[j].url[0]}}" alt="">
+			                    	</div>
+			                      	<div class="info clearfix">
+			                        	{{=it.all[i].files[j].name2}}
+			                        	<i class="icon-folder-open" data-href="{{=it.all[i].files[j].url[0]}}" data-pid={{=i}} ></i>
+			                      	</div>
+			                     </li>
+			                    {{ } }}
+			                </ul>
+			              {{ } }}
+			            </script> 
+					</div>
+					<div class="box_status clearfix">
+						<div class="option">
+							<label>当前目录</label>
+							<select class="folder_select" id="imglossless_select_currentPath"></select>
+							<input class="hide" type="file" id="imglossless_path_hidden" nwdirectory/>
+							<button id="imglossless_btn_currentPath">选择目录</button>
+							<button id="imglossless_currentPath_refresh">刷新</button>
+						</div>
+					</div>
+				</div>
+				<div id="pngloss" class="cont ">
+					<div class="box_setting clearfix">
+						<div class="option">
+							<label>文件名后缀</label>
+					         <select id="pngloss_select_ext">
+					            <option value ="">无后缀</option>
+					            <option value ="-loss">-loss</option>
+					         </select>
+				         </div>
+				         <div class="option">
+							<label>质量</label>
+							<select id="pngloss_select_quality">
+					            <option value ="" selected="selected">忽略</option>
+					            <option value ="100">100%</option>
+					            <option value ="95">95%</option>
+					            <option value ="90">90%</option>
+					            <option value ="85">85%</option>
+					            <option value ="80">80%</option>
+					            <option value ="75">75%</option>
+					            <option value ="70">70%</option>
+					            <option value ="65">65%</option>
+					            <option value ="60">60%</option>
+					            <option value ="55">55%</option>
+					            <option value ="50">50%</option>
+					            <option value ="45">45%</option>
+					            <option value ="40">40%</option>
+					            <option value ="35">35%</option>
+					            <option value ="30">30%</option>
+					            <option value ="25">25%</option>
+					            <option value ="20">20%</option>
+					            <option value ="15">15%</option>
+					         </select>
+						</div>
+						<div class="option">
+							<label>颜色数</label>
+							<select id="pngloss_select_colors">
+					            <option value ="">忽略</option>
+					            <option value ="256" selected="selected">256</option>
+					            <option value ="192">192</option>
+					            <option value ="128">128</option>
+					            <option value ="64">64</option>
+					            <option value ="16">16</option>
+					            <option value ="8">8</option>
+					            <option value ="4">4</option>
+					            <option value ="2">2</option>
+					         </select>
+						</div>
+						<div class="option">
+							<label><input type="checkbox" id="pngloss_check_iedebug"/>兼容ie6</label>
+							
+						</div>
+						<div class="option">
+							<label>输出目录</label>
+							<select class="folder_select" id="pngloss_select_savePath"></select>
+							<button id="pngloss_btn_savePath">选择目录</button>
+							<input class="hide" type="file" id="pngloss_savePath_hidden" nwdirectory/>
+						</div>
+				          <div class="func">
+				          	<button class="custom_button btn_strong" id="pngloss_btn_cov">开始转换</button>
+				          </div>
+					</div>
+					<div class="box_preview">
+						<div class="empty">
+							<span class="drag_area">+</span>
+						</div>
+						<script id="pngloss_tmpl_filelist" type="text/template">
+			              {{ for (var i = 0; i < it.all.length; i++) { }}
+			                <ul class="clearfix imglist">
+			                    {{ for (var j = 0; j < it.all[i].files.length; j++) { }}
+			                    <li data-pid="{{=i}}" data-id="{{=j}}" class="checked">
+			                    	<div class="thumb">
+			                    		<img src="{{=it.all[i].files[j].url[0]}}" alt="">
+			                    	</div>
+			                      	<div class="info clearfix">
+			                        	{{=it.all[i].files[j].name2}}
+			                        	<i class="icon-folder-open" data-href="{{=it.all[i].files[j].url[0]}}" data-pid={{=i}} ></i>
+			                      	</div>
+			                     </li>
+			                    {{ } }}
+			                </ul>
+			              {{ } }}
+			            </script> 
+					</div>
+					<div class="box_status clearfix">
+						<div class="option">
+							<label>当前目录</label>
+							<select class="folder_select" id="pngloss_select_currentPath"></select>
+							<input class="hide" type="file" id="pngloss_path_hidden" nwdirectory/>
+							<button id="pngloss_btn_currentPath">选择目录</button>
+							<button id="pngloss_currentPath_refresh">刷新</button>
 						</div>
 					</div>
 				</div>
@@ -198,6 +366,9 @@
 <script src="assets/js/iSparta.js"></script>
 <script src="assets/js/iSparta.apng.js"></script>
 <script src="assets/js/iSparta.webp.js"></script>
+<script src="assets/js/iSparta.imglossless.js"></script>
+<script src="assets/js/iSparta.pngloss.js"></script>
+
 <script src="assets/js/main.js"></script>
 </body>
 </html>
