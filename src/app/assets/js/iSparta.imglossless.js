@@ -217,7 +217,7 @@
 
 				if(type=="gif"){
 					
-					exec(gifsiclecomd, {timeout: 10000}, function(e){
+					exec(gifsiclecomd, {timeout: 1000000}, function(e){
 						
 						fs.copy(tempdir+name2, path,function(){
 							window.iSparta.imglossless.switch(id+1);
@@ -227,7 +227,7 @@
 				}
 				if(type=="jpg"){
 					
-					exec(jpegoptimcomd, {timeout: 10000}, function(e){
+					exec(jpegoptimcomd, {timeout: 1000000}, function(e){
 						
 						fs.copy(tempdir+name2, path,function(){
 							window.iSparta.imglossless.switch(id+1);
@@ -238,7 +238,7 @@
 				}
 				if(type=="png"){
 					
-					exec(pngoutcomd, {timeout: 10000}, function(e){
+					exec(pngoutcomd, {timeout: 1000000}, function(e){
 						console.log(pngoutcomd)
 	                	fs.copy(tempdir+name2, path,function(e){
 	                		

@@ -206,9 +206,30 @@
             var pngquant = process.cwd() + '/app/libs/pngloss/'+iSparta.getOsInfo()+'/pngquant';
             pngquant=window.iSparta.handlePath(pngquant);
 
+   //          name2=name2.replace(".gif","");
+   //          var start=name2.indexOf(".");
+   //          var end=name2.lastIndexOf(".");
+   //          var nameTemp=name2.substr(0,start);
+   //          var num=name2.substring(start+1,end)
+   //         	num=parseInt(num)+1;
+   //         	if(num<10){
+   //         		num="0"+num;
+   //         	}
+   //         	var afterPath=savePath+iSparta.sep+nameTemp+"\\"+nameTemp+num+".png";
+   //         	var afterDir=savePath+iSparta.sep+nameTemp+"\\";
+   //         	console.log(afterDir)
+   //         	if(!fs.existsSync(afterDir)){
+   //         		fs.mkdirsSync(afterDir);
+   //         	}
+			// fs.copy(url, afterPath,function(){				
+			// 	window.iSparta.pngloss.switch(id+1);
+			// });  
 
-   			fs.readFile(url, function (err, data) {
-   				
+       //      window.iSparta.pngloss.format.writeNumData(url,function(){
+       //      	window.iSparta.pngloss.switch(id+1);
+   			 // });
+			fs.readFile(url, function (err, data) {
+	   				
 				if (err) throw err;
 				var PNG_SIGNATURE = String.fromCharCode(0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a);
 				var imgData="";
@@ -218,9 +239,7 @@
 				window.iSparta.pngloss.format.parsePNGData(imgData);
 				
 				pnglossExec();
-			});
-			
-
+			});            
 			function pnglossExec(){
 				//var url=tempdir+'pngloss_new1.png';
 				var qualityOption=quality?'--quality '+(quality-10)+'-'+quality:"";
@@ -229,7 +248,7 @@
 				}else{
 					var pngquantcomd='"'+pngquant+'" --force --iebug --ext -temp.png '+qualityOption+' '+colors+' "'+url+'"';
 				}
-				console.log(pngquantcomd)
+				
 				if(name.lastIndexOf("-loss")!=-1){
 					window.iSparta.pngloss.switch(id+1);
 					return;
@@ -237,7 +256,7 @@
 				// console.log(pngquantcomd)
 				if(type=="png"){
 					
-					exec(pngquantcomd, {timeout: 10000}, function(e){
+					exec(pngquantcomd, {timeout: 1000000}, function(e){
 						
 						var afterPath="";
 						if(savePath=="self"){
@@ -287,8 +306,12 @@
                 var length = this.readDWord(imageData.substr(off, 4));
                 var type = imageData.substr(off + 4, 4);
                 var data;
-                
+                console.log(type)
                 switch (type) {
+                	case "acTL":
+                	var num = this.readDWord(imageData.substr(off + 8 + 4, 4));
+                	console.log(num)
+                	break;
                     case "npTc":
                         this.npTcData+=imageData.substr(off + 8, length);
                         break;                    
@@ -353,7 +376,59 @@
 			
 			});
         },
+		writeNumData:function(filepath,callback){
+        	var self=this;
         
+        	fs.readFile(filepath, function (err, data) {
+        		
+				if (err) throw err;
+			
+				var PNG_SIGNATURE = String.fromCharCode(0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a);
+				var imgData="";
+				for(var i=0;i<data.length;i++){
+					imgData+=String.fromCharCode(data[i]);
+				}
+				
+				// console.log(self.PNG_SIGNATURE)
+				if (imgData.substr(0, 8) != self.PNG_SIGNATURE) { 
+	                return false;
+	            }
+	           
+	            var pngtmp=imgData;
+	            var off = 8, frame = null;
+	            do {
+	                var length = self.readDWord(imgData.substr(off, 4));
+	                var type = imgData.substr(off + 4, 4);
+	                var data;
+	                
+	                switch (type) {
+	                    case "acTL":
+	                        var before=pngtmp.substring(0,off + 8 + 4);
+                    		var after=pngtmp.substring(off + 8 + 8,pngtmp.length);
+                    		var middle=self.writeDWord(0);
+                    		// var middle=self.npTcData;
+                    		pngtmp=before+middle+after;
+                    		finish=true;
+	                        break;
+	                    default:
+	                        break;
+	                }
+	                off += 12 + length;
+	            } while(type != "IEND" && off < imgData.length);
+	            var base64Data=btoa(pngtmp);
+				var dataBuffer = new Buffer(base64Data, 'base64');
+				
+				fs.writeFile(filepath, dataBuffer, function(err){
+				 	if(err) throw err;
+				 	// fs.copy(filepath, saveDir+name+'-loss.png', function(err){
+				 		callback();
+					  	
+					// });
+			        
+				})
+			
+			});
+        },        
         readDWord:function(data) {
 	        var x = 0;
 	        for (var i = 0; i < 4; i++) x += (data.charCodeAt(i) << ((3 - i) * 8));

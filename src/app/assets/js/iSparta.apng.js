@@ -295,8 +295,7 @@
 				rate=self.options.rate*100;
 				var tempPath=tempdir+"apngout.png";
 				// console.log('"'+apngasm+'" "'+tempPath+'" "'+tempdir+'apng1.png'+'" '+rate+" 100"+" /l"+loop)
-
-				exec('"'+apngasm+'" "'+tempPath+'" "'+tempdir+'apng1.png'+'" '+rate+" 100"+" /l"+loop, {timeout: 10000}, function(e){
+				exec('"'+apngasm+'" "'+tempPath+'" "'+tempdir+'apng1.png'+'" '+rate+" 100"+" /l"+loop, {timeout: 1000000}, function(e){
 	               // exec('"'+apngopt+'" "'+tempPath+'" "'+tempPath+'"', {timeout: 10000}, function(e){
 
 	                	if(e) throw e;
@@ -351,8 +350,7 @@
 				var tempPath=tempdir+"apngout.png";
 				
 				var lossPath=saveDir+name+'.png';
-
-				exec('"'+apngasm+'" "'+lossPath+'" "'+tempdir+'frame-loss1.png'+'" '+rate+" 100"+" /l"+loop, {timeout: 10000}, function(e){
+				exec('"'+apngasm+'" "'+lossPath+'" "'+tempdir+'frame-loss1.png'+'" '+rate+" 100"+" /l"+loop, {timeout: 1000000}, function(e){
 	               // exec('"'+apngopt+'" "'+tempPath+'" "'+tempPath+'"', {timeout: 10000}, function(e){
 					
 						var size = fs.statSync(lossPath).size;

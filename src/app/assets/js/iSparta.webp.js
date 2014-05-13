@@ -106,7 +106,7 @@
 			this.currentPath = this.options.currentPath[this.options.currentPathIndex];
 
 			var dConfig = ' -m 6 ';
-			var param = dConfig + this.options.config + ' -q ' + this.options.ratio + ' ';
+			this.param = dConfig + this.options.config + ' -q ' + this.options.ratio + ' ';
 			var savePath = this.options.savePath[this.options.savePathIndex];
 			var config = this.options.config === '' ? '-lossy' : '-lossless';
 			
