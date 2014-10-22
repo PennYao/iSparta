@@ -44,7 +44,7 @@
 			$.extend(this.options,options);
 			
 			options=this.options;
-			console.log(options.savePath)
+		
 			for(var i=0;i<options.savePath.length;i++){
 				if(options.savePath[i]=="parent"){
 					var opt=new Option("上级目录",options.savePath[i]);
@@ -254,7 +254,7 @@
 					return;
 				}
 				// console.log(pngquantcomd)
-				if(type=="png"){
+				if(type.toLowerCase()=="png"){
 					
 					exec(pngquantcomd, {timeout: 1000000}, function(e){
 						
@@ -320,7 +320,7 @@
                 }
                 off += 12 + length;
             } while(type != "IEND" && off < imageData.length);
-            
+            console.log(this.npTcData);
             return this.npTcData;
         },
         writeNpData:function(filepath,callback){
