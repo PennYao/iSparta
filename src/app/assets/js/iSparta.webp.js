@@ -54,7 +54,8 @@
 
         init: function() {
 
-            var options = localData.getJSON("webp"),
+            var defaultJson = {"config":"","ratio":"75","savePath":["self","parent"],"currentPath":[""],"otherFiles":[],"savePathIndex":0,"currentPathIndex":0},
+                options = localData.getJSON("webp") || defaultJson,
                 length  = options.savePath.length,
                 clength = options.currentPath.length,
                 opt;
