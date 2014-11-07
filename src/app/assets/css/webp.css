@@ -10,6 +10,7 @@
 
 .thumbnail img {
 	width: 135px;
+	min-height: 135px;
 }
 
 select.folder_select {
